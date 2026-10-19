@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f4eee5">
+<title>LinkPulse — Give every link a little more life</title>
+<meta name="description" content="A beautifully considered link studio for short links, custom QR codes, and meaningful analytics.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f4eee5;--paper2:#e9dfd1;--ink:#21170f;--muted:#796b5d;--orange:#f16b36;--orange2:#d94d24;--line:rgba(33,23,15,.15);--card:#fbf8f3;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Manrope',sans-serif;--ease:cubic-bezier(.2,.75,.2,1)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);overflow-x:hidden}a{color:inherit;text-decoration:none}button,input,select{font:inherit}button{cursor:pointer}.grain{position:fixed;inset:0;z-index:20;pointer-events:none;opacity:.075;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E")}.topbar{position:fixed;z-index:30;top:0;left:0;width:100%;padding:20px 4.5vw;display:flex;align-items:center;justify-content:space-between;mix-blend-mode:multiply}.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;letter-spacing:-.07em;font-size:22px}.brand-mark{width:28px;height:28px;border-radius:50%;background:var(--orange);position:relative;display:inline-block}.brand-mark:before,.brand-mark:after{content:'';position:absolute;width:13px;height:13px;border:2px solid var(--ink);border-radius:50%;top:6px}.brand-mark:before{left:3px}.brand-mark:after{right:3px}.navlinks{display:flex;gap:30px;align-items:center;font-size:12px;font-weight:700;letter-spacing:.04em}.navlinks a{opacity:.72;transition:opacity .2s}.navlinks a:hover{opacity:1}.nav-cta{padding:11px 17px;border:1px solid var(--ink);border-radius:30px!important;opacity:1!important}.hero{min-height:100svh;position:relative;display:flex;align-items:center;padding:130px 8vw 75px;overflow:hidden}.hero-copy{width:52%;max-width:660px;position:relative;z-index:4}.eyebrow{font:11px var(--mono);text-transform:uppercase;letter-spacing:.14em;display:flex;align-items:center;gap:10px;color:var(--muted)}.eyebrow:before{content:'';width:24px;height:1px;background:var(--orange)}h1{font-family:var(--display);font-size:clamp(58px,8.7vw,130px);letter-spacing:-.095em;line-height:.86;margin:30px 0 25px;font-weight:600;max-width:760px}h1 .stroke{-webkit-text-stroke:1.5px var(--ink);color:transparent}h1 .accent{color:var(--orange)}.hero-copy p{font-size:16px;line-height:1.7;max-width:400px;color:#66584a;margin:0 0 30px}.hero-actions{display:flex;align-items:center;gap:18px}.button{border:0;border-radius:999px;padding:15px 21px;background:var(--ink);color:#fff8ef;font-size:12px;font-weight:700;display:inline-flex;gap:12px;align-items:center;transition:transform .25s var(--ease),background .25s}.button:hover{transform:translateY(-3px);background:var(--orange2)}.button .arrow{font-size:17px;line-height:10px}.text-link{font-size:12px;font-weight:700;border-bottom:1px solid var(--line);padding:9px 0}.hero-note{margin-top:60px;font:10px var(--mono);letter-spacing:.06em;color:#8b7b69;display:flex;gap:14px;align-items:center}.hero-note .dot{height:6px;width:6px;border-radius:50%;background:#5e9568;box-shadow:0 0 0 4px #5e95681c}.scene-wrap{position:absolute;right:-1vw;top:8%;width:58vw;height:82%;min-width:470px;pointer-events:none}.scene-wrap:after{content:'';position:absolute;inset:5% 0 0;background:radial-gradient(ellipse,rgba(241,107,54,.13),rgba(241,107,54,.035) 42%,transparent 70%);z-index:-1}.scene-wrap canvas{width:100%;height:100%;display:block;position:relative;z-index:1}.scene-label{position:absolute;right:11%;bottom:8%;font:10px var(--mono);letter-spacing:.12em;color:#887767;z-index:3}.orbit-tag{position:absolute;z-index:4;background:rgba(251,248,243,.8);border:1px solid rgba(33,23,15,.13);backdrop-filter:blur(12px);padding:10px 13px;border-radius:5px;font:10px var(--mono);box-shadow:0 12px 32px #3e24100d;animation:float 5s ease-in-out infinite}.tag-one{top:19%;right:15%}.tag-two{top:58%;right:5%;animation-delay:-2s}.tag-three{bottom:15%;left:13%;animation-delay:-3.5s}@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-13px) rotate(1deg)}}.scroll-cue{position:absolute;bottom:27px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;font:9px var(--mono);letter-spacing:.16em;color:#8e7d6b}.scroll-cue span{display:block;width:40px;height:1px;background:#b5a28f;position:relative;overflow:hidden}.scroll-cue span:after{content:'';position:absolute;inset:0;background:var(--orange);animation:scan 1.8s ease-in-out infinite}@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.ticker{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:17px 0;overflow:hidden;white-space:nowrap;background:#eee4d7}.ticker-track{display:flex;gap:35px;width:max-content;animation:ticker 32s linear infinite;font:11px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#5f4a38}.ticker b{color:var(--orange);font-weight:500}@keyframes ticker{to{transform:translateX(-50%)}}
+.section{padding:120px 8vw;position:relative}.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:35px;margin-bottom:48px}.section-kicker{font:10px var(--mono);letter-spacing:.13em;color:var(--orange);text-transform:uppercase;margin-bottom:17px}.section h2{font:500 clamp(38px,5.4vw,76px)/.98 var(--display);letter-spacing:-.075em;margin:0;max-width:720px}.section h2 em{font-style:normal;color:var(--orange)}.section-head p{max-width:270px;color:var(--muted);font-size:13px;line-height:1.7;margin:0}.studio{background:#21170f;color:#f5eee5;padding-top:110px;padding-bottom:120px;overflow:hidden}.studio:before{content:'LINK / LINK / LINK /';position:absolute;right:-4%;top:8%;font:800 clamp(65px,13vw,180px)/.8 var(--display);letter-spacing:-.1em;color:#ffffff06;white-space:nowrap;pointer-events:none}.studio .section-kicker{color:#f18a5c}.studio .section-head p{color:#b6a596}.studio-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(330px,.8fr);gap:50px;align-items:start;position:relative;z-index:1}.form-card{background:var(--card);color:var(--ink);border-radius:8px;padding:32px;box-shadow:0 35px 90px #0002}.form-top{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:24px}.form-top h3{margin:0;font:700 19px var(--display);letter-spacing:-.04em}.live-pill{font:9px var(--mono);padding:7px 9px;border:1px solid #c6d9c5;color:#427347;border-radius:3px;letter-spacing:.08em}.field{margin-bottom:17px}.field label{display:block;font:10px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#857464;margin-bottom:8px}.field input,.field select{width:100%;background:#f4eee6;border:1px solid #dfd4c6;border-radius:4px;padding:14px;color:var(--ink);outline:none;transition:border .2s,box-shadow .2s;font-size:13px}.field input:focus,.field select:focus{border-color:var(--orange);box-shadow:0 0 0 3px #f16b3618}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:13px}.form-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:23px}.form-foot small{color:#8c7e70;font-size:10px;line-height:1.5;max-width:190px}.button-orange{background:var(--orange);color:#25170e}.button-orange:hover{background:#d94d24}.result{display:none;margin-top:20px;border:1px solid #c9dfc8;background:#eff7ed;border-radius:5px;padding:16px;color:#28482b}.result.show{display:block;animation:up .4s var(--ease)}.result strong{display:block;font:700 12px var(--mono);margin-bottom:7px}.result a{font-size:13px;overflow-wrap:anywhere;text-decoration:underline}.result-actions{display:flex;gap:8px;margin-top:12px}.mini-btn{border:1px solid #b6ceb3;background:#fff;padding:8px 11px;border-radius:3px;font-size:11px;color:#28482b}.side-panel{padding-top:7px}.side-panel h3{font:500 clamp(28px,3.4vw,46px)/1.05 var(--display);letter-spacing:-.06em;margin:0 0 16px}.side-panel>p{color:#b6a596;font-size:13px;line-height:1.8;max-width:360px}.step-list{margin-top:37px;border-top:1px solid #ffffff27}.step{display:grid;grid-template-columns:45px 1fr;gap:14px;padding:18px 0;border-bottom:1px solid #ffffff27}.step-num{font:11px var(--mono);color:#f18a5c}.step h4{font-size:13px;margin:0 0 6px}.step p{font-size:11px;line-height:1.6;color:#b6a596;margin:0}.micro-orbit{width:170px;height:170px;border:1px solid #ffffff2b;border-radius:50%;margin:38px 0 0 auto;position:relative;display:grid;place-items:center}.micro-orbit:before,.micro-orbit:after{content:'';position:absolute;inset:22px;border:1px solid #f16b3677;border-radius:50%;transform:rotateX(68deg) rotateZ(35deg)}.micro-orbit:after{inset:5px;transform:rotateX(68deg) rotateZ(-45deg);border-color:#fff4}.micro-orbit span{width:55px;height:55px;background:var(--orange);border-radius:50%;box-shadow:0 0 50px #f16b3666;z-index:2}.features{background:#e9dfd1}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.feature-card{min-height:255px;border:1px solid #d1c3b2;border-radius:5px;padding:25px;position:relative;overflow:hidden;transition:transform .3s var(--ease),background .3s}.feature-card:hover{transform:translateY(-7px);background:#f6f0e7}.feature-index{font:10px var(--mono);color:#a18c78}.feature-icon{height:83px;display:flex;align-items:center;justify-content:center;margin:9px 0 13px;color:var(--orange)}.feature-icon svg{width:64px;height:64px;stroke:currentColor;stroke-width:1.2;fill:none;overflow:visible}.feature-card h3{font:700 18px var(--display);letter-spacing:-.05em;margin:0 0 8px}.feature-card p{font-size:12px;line-height:1.7;color:#796b5d;margin:0;max-width:270px}.feature-card .big-n{position:absolute;right:14px;bottom:-25px;font:800 90px var(--display);letter-spacing:-.1em;color:#21170f07}.links-section{background:var(--paper)}.links-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}.links-toolbar p{font:10px var(--mono);color:var(--muted);letter-spacing:.08em}.refresh-btn{background:transparent;border:1px solid var(--line);padding:9px 13px;border-radius:99px;font-size:11px}.table-shell{border:1px solid var(--line);border-radius:5px;overflow:auto;background:#fbf8f3}.links-table{width:100%;border-collapse:collapse;min-width:660px}.links-table th{text-align:left;font:9px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:#9b8977;background:#eee5d9;padding:15px 17px}.links-table td{padding:16px 17px;border-top:1px solid #e7ded3;font-size:12px}.links-table .code{font:11px var(--mono);color:var(--orange2)}.links-table .url-cell{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#827466}.empty-state{text-align:center;padding:45px 15px;color:#928170;font-size:12px}.footer{background:var(--orange);padding:45px 8vw 30px;position:relative;overflow:hidden}.footer-top{display:flex;justify-content:space-between;align-items:flex-end;gap:25px}.footer h2{font:600 clamp(35px,6vw,80px)/.9 var(--display);letter-spacing:-.08em;margin:15px 0 0;max-width:650px}.footer .brand-mark{background:var(--ink)}.footer .brand-mark:before,.footer .brand-mark:after{border-color:var(--paper)}.footer-bottom{margin-top:60px;padding-top:18px;border-top:1px solid #21170f35;display:flex;justify-content:space-between;gap:15px;font:9px var(--mono);letter-spacing:.06em;text-transform:uppercase}.toast{position:fixed;z-index:100;left:50%;bottom:25px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--ink);color:var(--paper);padding:13px 17px;border-radius:5px;font-size:12px;transition:all .25s}.toast.show{opacity:1;transform:translate(-50%,0)}.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s var(--ease),transform .8s var(--ease)}.reveal.visible{opacity:1;transform:translateY(0)}.loader{position:fixed;inset:0;background:var(--ink);z-index:1000;display:grid;place-items:center;color:var(--paper);transition:opacity .8s,visibility .8s}.loader.done{opacity:0;visibility:hidden}.loader-inner{width:170px}.loader-logo{font:800 30px var(--display);letter-spacing:-.08em;margin-bottom:18px}.loader-bar{height:2px;background:#ffffff26;overflow:hidden}.loader-bar:after{content:'';display:block;width:40%;height:100%;background:var(--orange);animation:loadbar 1.15s var(--ease) forwards}.loader-caption{font:9px var(--mono);letter-spacing:.12em;margin-top:10px;color:#b6a596}@keyframes loadbar{to{width:100%}}
+@media(max-width:850px){.topbar{padding:16px 5vw}.navlinks{gap:14px}.navlinks a:not(.nav-cta){display:none}.hero{padding:120px 7vw 70px;min-height:900px;align-items:flex-start}.hero-copy{width:100%;padding-top:25px}.hero h1{font-size:clamp(64px,14vw,100px)}.scene-wrap{top:43%;right:-12%;width:95vw;height:49%;min-width:0;opacity:.88}.tag-one{top:9%;right:20%}.tag-two{top:50%;right:0}.tag-three{bottom:8%;left:9%}.scroll-cue{bottom:18px}.section{padding:85px 7vw}.section-head{display:block}.section-head p{margin-top:20px}.studio-grid{grid-template-columns:1fr;gap:35px}.side-panel{max-width:620px}.micro-orbit{margin:25px 10px 0 auto}.feature-grid{grid-template-columns:1fr 1fr}.feature-card{min-height:240px}.footer-top{display:block}.footer-top>.button{margin-top:25px}}
+@media(max-width:520px){.brand{font-size:19px}.hero{min-height:850px;padding-top:115px}.hero-copy p{font-size:14px;max-width:320px}.hero-note{margin-top:32px}.scene-wrap{top:49%;right:-20%;width:110vw;height:39%}.tag-one{right:13%;top:8%}.tag-two{right:2%;top:52%}.tag-three{left:4%;bottom:8%}.section{padding:72px 6vw}.form-card{padding:20px}.field-row{grid-template-columns:1fr}.form-foot{align-items:flex-start;flex-direction:column}.feature-grid{grid-template-columns:1fr}.feature-card{min-height:220px}.links-toolbar{align-items:flex-start}.footer{padding:35px 6vw 22px}.footer-bottom{margin-top:40px;flex-direction:column}.section h2{font-size:47px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+
+/* Tiny typographic bursts make taps feel tactile without overwhelming the page. */
+.pulse-glyph{position:fixed;z-index:60;pointer-events:none;font:700 12px var(--mono);color:var(--orange);text-shadow:0 1px 0 #fff8;animation:glyph-pop .72s cubic-bezier(.12,.7,.2,1) forwards;will-change:transform,opacity}
+@keyframes glyph-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5) rotate(0)}15%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.15) rotate(var(--rot))}}
+@media(prefers-reduced-motion:reduce){.pulse-glyph{display:none}}
+
+/* Scroll-reactive ambient field: subtle orbit paths and drifting signal nodes. */
+#scroll-flow-bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.92;mix-blend-mode:normal;transform:translateZ(0)}
+body>header,body>main,body>footer,body>.ticker,body>section,body>.hero,body>.section,body>.footer{position:relative;z-index:1}
+@media(prefers-reduced-motion:reduce){#scroll-flow-bg{opacity:.62}}
+
+/* More visible primary actions in the create-link result and form. */
+#make-qr, #copy-short{min-height:44px!important;padding:12px 16px!important;font-size:13px!important;font-weight:750!important;border-radius:6px!important;line-height:1.2}
+#make-qr{border:1px solid #d94d24!important;background:#f16b36!important;color:#21170f!important}
+#copy-short{border:1px solid #9ebd99!important;background:#fff!important;color:#28482b!important}
+#make-qr:focus-visible,#copy-short:focus-visible{outline:3px solid rgba(241,107,54,.35);outline-offset:2px}
+@media(max-width:520px){.result-actions{flex-wrap:wrap}.result-actions #make-qr,.result-actions #copy-short{flex:1 1 145px}}
+
+</style>
+
+<style>
+/* Always-visible globe fallback: no backend or external 3D library required. */
+#globe-fallback{position:absolute;z-index:1;width:min(92%,680px);height:auto;aspect-ratio:1;left:50%;top:49%;transform:translate(-50%,-50%);overflow:visible;filter:drop-shadow(0 24px 35px rgba(241,107,54,.12));pointer-events:none;}
+#globe-fallback .globe-sphere{transform-origin:50% 50%;transform-box:fill-box;}
+#globe-fallback{perspective:1000px;}
+#globe-fallback .globe-sphere{transform-style:preserve-3d;}
+#globe-fallback .globe-outline{fill:rgba(250,247,241,.48);stroke-width:1.8;}
+#globe-fallback .globe-outline{fill:rgba(250,247,241,.62);stroke:#f16b36;stroke-opacity:.65;stroke-width:1.5;}
+#globe-fallback .globe-grid{fill:none;stroke:#77695d;stroke-width:1;stroke-opacity:.35;}
+#globe-fallback .globe-borders{fill:none;stroke:#f16b36;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:.94;}
+#globe-fallback .globe-land{fill:rgba(241,107,54,.07);stroke:#f16b36;stroke-width:1.5;stroke-linejoin:round;}
+#hero3d{z-index:2!important;background:transparent;}body.three-globe-ready #globe-fallback{opacity:0;visibility:hidden;}
+@media(max-width:850px){#globe-fallback{width:min(100%,530px);top:52%;}}
+@media(max-width:520px){#globe-fallback{width:min(105%,440px);top:54%;}}
+</style>
+
+<style id="linkpulse-qr-enhancements">
+.result-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.result-actions .mini-btn{min-height:46px;padding:12px 18px;font-size:13px;font-weight:750;border-radius:7px;cursor:pointer;transition:transform .18s,box-shadow .18s,background .18s}
+.result-actions .mini-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px #21170f18}
+#make-qr{background:#f16b36;color:#21170f;border:1px solid #f16b36;min-width:160px}
+#copy-short{background:#fff;color:#28482b;border:1px solid #9db99a;min-width:145px}
+#qr-holder{box-sizing:border-box;width:100%;max-width:560px!important;padding:18px!important;border:1px solid #e8d8c7;border-radius:10px;box-shadow:0 12px 35px #21170f0c}
+.qr-studio-ui{box-sizing:border-box;width:100%!important;max-width:520px;margin:auto}
+.qr-control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+.qr-studio-ui label{display:block;font-size:11px;color:#796b5d;line-height:1.45}
+.qr-studio-ui input[type=color],.qr-studio-ui select,.qr-studio-ui input[type=range]{box-sizing:border-box;width:100%;margin-top:7px}
+.qr-studio-ui input[type=color]{height:42px;border:1px solid #e1d6c8;border-radius:6px;background:#fff;padding:4px}
+.qr-studio-ui select{padding:11px;border:1px solid #e1d6c8;border-radius:6px;background:#fff;color:#21170f}
+.qr-studio-ui .qr-preview-shell{display:flex;justify-content:center;align-items:center;background:#fff;border:1px solid #eadfd2;border-radius:9px;padding:14px;min-height:240px;overflow:hidden}
+#qr-preview{display:flex;justify-content:center;align-items:center;width:min(100%,280px);height:auto;aspect-ratio:1/1;max-width:280px;min-height:0;overflow:hidden;flex:0 1 280px;box-sizing:border-box}
+#qr-preview>div{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;display:flex!important;align-items:center!important;justify-content:center!important;overflow:hidden!important;box-sizing:border-box!important}
+#qr-preview canvas,#qr-preview svg{display:block!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;object-fit:contain;flex:0 1 auto;box-sizing:border-box!important}
+.qr-studio-ui .qr-preview-shell{min-height:0;padding:14px;display:flex;justify-content:center;align-items:center}
+#qr-preview>div{width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important}
+#qr-preview canvas,#qr-preview svg{display:block;max-width:100%;max-height:100%;height:100%!important;width:100%!important}
+.qr-action-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.qr-action-row button{min-height:42px;padding:10px 13px;font-size:12px;font-weight:700;border-radius:6px;cursor:pointer}
+.qr-studio-ui .qr-note{font-size:11px;line-height:1.6;color:#796b5d;margin-top:10px}
+@media(max-width:520px){#qr-holder{max-width:100%!important;padding:12px!important}.qr-studio-ui .qr-preview-shell{padding:8px;min-height:0}#qr-preview{width:min(100%,260px);max-width:260px}.result-actions .mini-btn{flex:1;min-width:0}.qr-control-grid{grid-template-columns:1fr}.form-foot{align-items:stretch;flex-direction:column}.form-foot .button{width:100%}}
+
+.link-state{display:inline-block;margin-top:5px;font-size:10px;letter-spacing:.08em;font-weight:700}.link-state.is-active{color:#426343}.link-state.is-paused{color:#a33b30}.owner-actions{display:flex;gap:6px;flex-wrap:wrap}.owner-actions .mini-btn{padding:9px 10px;min-width:62px}@media(max-width:760px){.owner-actions{flex-direction:column;align-items:stretch}.owner-actions .mini-btn{width:100%}}
+</style>
+<style id="linkpulse-account-and-analytics">
+.navlinks #auth-open,.navlinks #auth-logout{font:inherit;cursor:pointer}.navlinks button[hidden]{display:none!important}
+.lp-auth-backdrop{position:fixed;inset:0;z-index:1000;background:#21170fc9;display:grid;place-items:center;padding:20px;backdrop-filter:blur(7px)}.lp-auth-backdrop[hidden]{display:none}.lp-auth-card{position:relative;width:min(100%,440px);padding:34px;background:#fbf8f3;color:#21170f;border:1px solid #e5d5c3;border-radius:12px;box-shadow:0 30px 90px #0004}.lp-auth-card h2{font:500 clamp(30px,5vw,42px)/1.05 var(--display);letter-spacing:-.06em;margin:7px 0 10px}.lp-auth-card>p{font-size:12px;line-height:1.7;color:#796b5d}.lp-auth-card label{display:block;margin-top:16px;font:10px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:#796b5d}.lp-auth-card input{display:block;box-sizing:border-box;width:100%;margin-top:7px;padding:13px;border:1px solid #dfd4c6;border-radius:4px;background:#fff;color:#21170f;font:14px var(--sans)}.lp-auth-card .button{width:100%;justify-content:center;margin-top:8px}.lp-auth-close{position:absolute;right:13px;top:10px;border:0;background:transparent;font-size:28px;color:#796b5d;cursor:pointer}.lp-auth-message{min-height:17px;color:#a33b30;font-size:12px}.lp-auth-switch{margin-bottom:14px}.lp-auth-switch button{border:0;background:none;color:#a85e36;text-decoration:underline;cursor:pointer;font:inherit;font-weight:700}.lp-auth-card small{display:block;color:#928170;font-size:10px;line-height:1.6}.analytics-row td{background:#f2eadf;padding:18px!important}.analytics-panel{border:1px solid #e0d3c1;border-radius:7px;padding:16px;background:#fffdf9}.analytics-stats{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.analytics-stat{border:1px solid #e6d9ca;padding:9px 12px;border-radius:5px;min-width:95px}.analytics-stat b{display:block;font:700 18px var(--display)}.analytics-stat span{font:9px var(--mono);letter-spacing:.06em;color:#796b5d}.analytics-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:11px}.analytics-table th,.analytics-table td{text-align:left;padding:8px;border-bottom:1px solid #e9dfd3;overflow-wrap:anywhere}.analytics-table th{font:9px var(--mono);color:#796b5d;text-transform:uppercase}.analytics-note{font-size:10px;color:#796b5d;line-height:1.6}.links-toolbar .toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}.import-btn{background:transparent;border:1px solid var(--line);padding:9px 13px;border-radius:99px;font-size:11px;cursor:pointer}.import-btn:hover{border-color:var(--orange);color:var(--orange2)}@media(max-width:520px){.lp-auth-card{padding:27px 20px}.analytics-table{min-width:520px}.analytics-panel{overflow:auto}}
+</style>
+</head>
+<body>
+<div class="loader" id="loader"><div class="loader-inner"><div class="loader-logo">linkpulse<span style="color:var(--orange)">.</span></div><div class="loader-bar"></div><div class="loader-caption">MAKING CONNECTIONS...</div></div></div><canvas id="scroll-flow-bg" aria-hidden="true"></canvas><div class="grain"></div>
+<header class="topbar"><a class="brand" href="#top" aria-label="LinkPulse home"><span class="brand-mark"></span>linkpulse<span style="color:var(--orange)">.</span></a><nav class="navlinks"><a href="#how">THE IDEA</a><a href="#studio">LINK STUDIO</a><a href="#your-links">YOUR LINKS</a><button class="nav-cta" id="auth-open" type="button">Log in / Sign up ↗</button><button class="nav-cta" id="auth-logout" type="button" hidden>Sign out</button></nav></header>
+<div id="auth-modal" class="lp-auth-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="auth-title"><section class="lp-auth-card"><button type="button" id="auth-close" class="lp-auth-close" aria-label="Close login">×</button><div class="section-kicker">LINKPULSE ACCOUNT</div><h2 id="auth-title">Welcome back.</h2><p id="auth-subtitle">Sign in to keep your links connected to your account across devices.</p><form id="auth-form"><label>Email / Admin ID<input id="auth-email" type="email" autocomplete="username" required maxlength="320" placeholder="you@example.com"></label><label>Password<input id="auth-password" type="password" autocomplete="current-password" required minlength="10" maxlength="128" placeholder="At least 10 characters"></label><p id="auth-message" class="lp-auth-message" role="status"></p><button class="button button-orange" id="auth-submit" type="submit">Sign in ↗</button></form><p class="lp-auth-switch"><span id="auth-switch-label">New to LinkPulse?</span> <button type="button" id="auth-switch">Create an account</button></p><small>Admin accounts are configured by the project owner. Your password is never stored in the page.</small></section></div>
+<main id="top">
+<section class="hero"><div class="hero-copy"><div class="eyebrow">A SMALLER LINK. A BIGGER STORY.</div><h1>Make it<br><span class="stroke">short.</span><br>Make it <span class="accent">mean</span><span class="accent">.</span></h1><p>Links are how the internet moves. Give yours a little more intention — beautifully short URLs, expressive QR codes, and analytics that tell you what happened next.</p><div class="hero-actions"><a class="button" href="#studio">Build your first link <span class="arrow">↗</span></a><a class="text-link" href="#how">See how it works ↓</a></div><div class="hero-note"><span class="dot"></span> DESIGNED FOR THE WAY THE WEB ACTUALLY MOVES</div></div>
+<div class="scene-wrap" id="scene-wrap"><svg id="globe-fallback" viewBox="0 0 600 600" role="img" aria-label="Rotating transparent internet globe with orange country boundaries">
+<defs><clipPath id="globe-clip"><circle cx="300" cy="300" r="218"/></clipPath><radialGradient id="globe-glass" cx="34%" cy="27%" r="78%"><stop offset="0" stop-color="#fffdf8" stop-opacity=".86"/><stop offset=".62" stop-color="#f8eee2" stop-opacity=".42"/><stop offset="1" stop-color="#f16b36" stop-opacity=".12"/></radialGradient><linearGradient id="globe-shade" x1="0" x2="1"><stop offset="0" stop-color="#f16b36" stop-opacity=".22"/><stop offset=".48" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#21170f" stop-opacity=".17"/></linearGradient><filter id="glow"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<g class="globe-sphere" id="globe-fallback-spin">
+<circle cx="300" cy="300" r="224" fill="#f16b36" opacity=".09" filter="url(#glow)"/><circle class="globe-outline" cx="300" cy="300" r="218" fill="url(#globe-glass)"/>
+<g clip-path="url(#globe-clip)">
+<circle cx="300" cy="300" r="218" fill="url(#globe-glass)"/>
+<g class="globe-grid"><ellipse cx="300" cy="300" rx="70" ry="218"/><ellipse cx="300" cy="300" rx="145" ry="218"/><ellipse cx="300" cy="300" rx="195" ry="218"/><ellipse cx="300" cy="300" rx="218" ry="70"/><ellipse cx="300" cy="300" rx="218" ry="140"/><path d="M82 300H518M100 210Q300 245 500 210M100 390Q300 355 500 390"/></g>
+<!-- Simplified geographic silhouettes and orange internal boundaries -->
+<g class="globe-land">
+<path d="M123 207l19-31 35-18 21-28 35-8 22 17 31 3 20 20-12 21-30 9-9 25-23 14-5 27-20 20-10 38-24 4-12-27-21-18-8-33-21-16z"/>
+<path d="M216 324l25 4 19 23-3 28 16 26-8 35-18 28-10 38-18-16-4-35-18-28-7-39 8-29z"/>
+<path d="M293 170l25-24 38 1 22 17 32-3 29 17 25 2 25 23-10 21-31 4-18 22-28-2-10 19-29 3-16 19-23-7-12-22-24-5-12-28-20-11 1-23z"/>
+<path d="M335 271l26-17 29 12 16 28-7 35-18 18-10 32-19 27-21-8-12-31-17-24 4-31z"/>
+<path d="M428 382l29-14 27 12 17 28-13 22-28-2-19-16z"/>
+<path d="M482 210l22-7 15 16-7 20-18-2z"/>
+</g>
+<g class="globe-borders">
+<path d="M157 187l19 20-8 24 24 12-9 26 21 16M198 130l-3 30 22 12-7 24 18 16M231 143l-7 24 21 16-7 23 16 18M173 278l24-10 19 15-8 23 18 18M240 332l-21 12 9 27 21 7M242 380l-18 22 17 22M289 171l12 23-10 22 24 13-5 23M333 149l-9 27 22 18-6 21 24 10M380 160l-13 22 14 18-6 21 27 15M430 180l-14 22 19 18-13 22M468 204l-16 21 15 20M315 264l22 14-3 25 20 15M366 268l-8 24 17 19-11 24M397 298l-18 16 4 24M346 351l20 7 3 26M453 383l-8 20 19 16"/>
+</g>
+<circle cx="300" cy="300" r="218" fill="url(#globe-shade)"/>
+</g>
+<circle cx="300" cy="300" r="218" fill="none" stroke="#f16b36" stroke-opacity=".85" stroke-width="1.6"/>
+<!-- tiny connected internet nodes -->
+<g fill="#f16b36"><circle cx="178" cy="214" r="4"/><circle cx="231" cy="172" r="3.5"/><circle cx="359" cy="193" r="4"/><circle cx="401" cy="293" r="4"/><circle cx="341" cy="365" r="3.5"/><circle cx="236" cy="365" r="4"/><circle cx="455" cy="391" r="3.5"/></g>
+<g fill="none" stroke="#f16b36" stroke-opacity=".35"><path d="M178 214L231 172L359 193L401 293L341 365L236 365L178 214M231 172L236 365M359 193L341 365M401 293L455 391"/></g>
+</g><ellipse cx="300" cy="300" rx="248" ry="72" fill="none" stroke="#f16b36" stroke-opacity=".35" stroke-width="1.2" transform="rotate(-28 300 300)"/><ellipse cx="300" cy="300" rx="252" ry="58" fill="none" stroke="#77695d" stroke-opacity=".24" stroke-width="1" transform="rotate(58 300 300)"/>
+</svg><canvas id="hero3d" aria-label="Animated three-dimensional link sculpture"></canvas><div class="orbit-tag tag-one">01 / CLEAN URLS</div><div class="orbit-tag tag-two">02 / LIVE SIGNALS ↗</div><div class="orbit-tag tag-three">LINKS, WITH A LITTLE SOUL</div><div class="scene-label">LINKPULSE / GLOBAL NETWORK</div></div><div class="scroll-cue">SCROLL TO EXPLORE <span></span></div></section>
+<div class="ticker"><div class="ticker-track"><span>LESS CLUTTER <b>✳</b></span><span>MORE SIGNAL <b>✳</b></span><span>SHORT LINKS, LONG STORIES <b>✳</b></span><span>MADE TO BE SHARED <b>✳</b></span><span>LESS CLUTTER <b>✳</b></span><span>MORE SIGNAL <b>✳</b></span><span>SHORT LINKS, LONG STORIES <b>✳</b></span><span>MADE TO BE SHARED <b>✳</b></span></div></div>
+<section class="section features" id="how"><div class="section-head reveal"><div><div class="section-kicker">01 — WHAT IT DOES</div><h2>Small link.<br><em>Full story.</em></h2></div><p>All the practical stuff, with the rough edges smoothed out. Build in seconds. Share anywhere. Understand what happens after the click.</p></div><div class="feature-grid"><article class="feature-card reveal"><div class="feature-index">01 / SHORTEN</div><div class="feature-icon"><svg viewBox="0 0 80 80"><path d="M31 48l-7 7a13 13 0 0 1-18-18l14-14a13 13 0 0 1 18 0"/><path d="M49 32l7-7a13 13 0 0 1 18 18L60 57a13 13 0 0 1-18 0"/><path d="M27 53l26-26"/><circle cx="40" cy="40" r="31" stroke-dasharray="2 6" opacity=".4"/></svg></div><h3>Links, decluttered.</h3><p>Turn long, messy URLs into something tidy and shareable. Add your own alias when a link deserves a name.</p><span class="big-n">01</span></article><article class="feature-card reveal"><div class="feature-index">02 / MAKE IT YOURS</div><div class="feature-icon"><svg viewBox="0 0 80 80"><rect x="10" y="10" width="60" height="60" rx="3"/><rect x="18" y="18" width="17" height="17"/><rect x="45" y="18" width="17" height="17"/><rect x="18" y="45" width="17" height="17"/><path d="M45 45h7v7h-7zM57 45h5v17H45v-5M41 10v60" stroke-dasharray="2 4" opacity=".6"/></svg></div><h3>QRs with character.</h3><p>Create a scannable code for a poster, pitch, product, or profile. Download it and take it wherever it needs to go.</p><span class="big-n">02</span></article><article class="feature-card reveal"><div class="feature-index">03 / SEE WHAT HAPPENS</div><div class="feature-icon"><svg viewBox="0 0 80 80"><path d="M8 63h64M13 57V43h12v14M34 57V28h12v29M55 57V13h12v44"/><path d="M10 27l18-12 15 7 24-14" stroke-dasharray="3 4"/><circle cx="67" cy="8" r="3" fill="currentColor"/></svg></div><h3>Signals, not noise.</h3><p>Keep an eye on clicks, understand link performance, and get a clearer picture of what is reaching people.</p><span class="big-n">03</span></article></div></section>
+<section class="section studio" id="studio"><div class="section-head reveal"><div><div class="section-kicker">02 — THE LINK STUDIO</div><h2>Give it a URL.<br><em>Let it travel.</em></h2></div><p>One clean place to shape a link before it heads out into the world.</p></div><div class="studio-grid"><form class="form-card reveal" id="link-form"><div class="form-top"><h3>New connection</h3><span class="live-pill">● READY TO BUILD</span></div><div class="field"><label for="input-url">Destination URL *</label><input id="input-url" type="url" placeholder="https://your-long-link.com/something" required autocomplete="url"></div><div class="field"><label for="input-title">Give it a name</label><input id="input-title" type="text" placeholder="e.g. October launch campaign" maxlength="120"></div><div class="field"><label for="input-alias">Custom alias <span style="color:#aa9a89">(optional)</span></label><input id="input-alias" type="text" placeholder="e.g. fest-registration" maxlength="40" pattern="[a-zA-Z0-9_-]{3,40}" autocomplete="off" aria-describedby="alias-help"><small id="alias-help" style="display:block;color:#9b8977;font-size:10px;margin-top:7px">Your short link will end with /your-alias. Use 3–40 letters, numbers, hyphens or underscores. Must be unique.</small></div><div class="field-row"><div class="field"><label for="input-password">Password gate</label><input id="input-password" type="password" placeholder="Optional" minlength="4" autocomplete="new-password"></div><div class="field"><label for="input-limit">Click limit</label><input id="input-limit" type="number" min="1" max="1000000" placeholder="No limit"></div></div><div class="field"><label for="input-expiry">Expiry date <span style="color:#aa9a89">(optional)</span></label><input id="input-expiry" type="datetime-local"></div><div class="form-foot"><small>Your link is checked against the safety blocklist before it is created.</small><button class="button button-orange" id="create-btn" type="submit">Create link <span class="arrow">↗</span></button></div><div class="result" id="create-result" aria-live="polite"></div></form>
+<div class="side-panel reveal"><div class="section-kicker">A GOOD LINK DOES MORE</div><h3>Thoughtful by design.<br>Useful by nature.</h3><p>Build a link that looks good in a message, behaves how you need it to, and gives you a little more clarity once it is out there.</p><div class="step-list"><div class="step"><div class="step-num">01 /</div><div><h4>Shape your link</h4><p>Paste a destination, add a recognizable name, and choose optional controls.</p></div></div><div class="step"><div class="step-num">02 /</div><div><h4>Share it your way</h4><p>Copy your short link or create a QR code that can go from screen to print.</p></div></div><div class="step"><div class="step-num">03 /</div><div><h4>Follow the signal</h4><p>Check click counts and analytics when you want to see how your link is doing.</p></div></div></div><div class="micro-orbit" aria-hidden="true"><span></span></div></div></div></section>
+<section class="section links-section" id="your-links"><div class="section-head reveal"><div><div class="section-kicker">03 — YOUR LITTLE CORNER OF THE WEB</div><h2>Links out there.<br><em>Signals back.</em></h2></div><p>Your latest connections, all in one place. Refresh to check for updates.</p></div><div class="links-toolbar reveal"><p id="link-count">YOUR RECENT LINKS / LOADING…</p><div class="toolbar-actions"><input type="file" id="csv-import-file" accept=".csv,text/csv" hidden><button class="import-btn" id="csv-import">Import CSV</button><button class="refresh-btn" id="refresh-links">↻ Refresh list</button></div></div><div class="table-shell reveal"><table class="links-table"><thead><tr><th>Link / name</th><th>Destination</th><th>Clicks</th><th>Created</th><th>Analytics</th><th>Actions</th></tr></thead><tbody id="links-body"><tr><td colspan="6" class="empty-state">Gathering your links…</td></tr></tbody></table></div></section>
+</main><footer class="footer"><div class="footer-top"><div><a class="brand" href="#top"><span class="brand-mark"></span>linkpulse<span>.</span></a><h2>Make the internet<br>feel a little closer.</h2></div><a class="button" href="#studio" style="background:var(--ink);color:var(--paper)">Make a link <span class="arrow">↗</span></a></div><div class="footer-bottom"><span>LINKPULSE / INNOVISTA 2026</span><span>SHORT LINKS. HUMAN CONNECTIONS.</span><a href="/admin">ADMIN CONSOLE ↗</a></div></footer><div class="toast" id="toast" role="status"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script><script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script><script>
+/* Load QR engine automatically from two CDNs; no DevTools steps required. */
+window.__linkPulseQrReady = new Promise(resolve => {
+  if (window.QRCodeStyling) { resolve(true); return; }
+  const sources = [
+    'https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0/lib/qr-code-styling.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/qr-code-styling/1.6.0/qr-code-styling.js'
+  ];
+  let index = 0;
+  const loadNext = () => {
+    if (window.QRCodeStyling) { resolve(true); return; }
+    if (index >= sources.length) { resolve(false); return; }
+    const script = document.createElement('script');
+    script.src = sources[index++];
+    script.onload = () => resolve(!!window.QRCodeStyling);
+    script.onerror = () => { script.remove(); loadNext(); };
+    document.head.appendChild(script);
+  };
+  loadNext();
+});
+</script>
+<script>
+(()=>{'use strict';const $=id=>document.getElementById(id);const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;let toastTimer;
+window.addEventListener('load',()=>setTimeout(()=>$('loader').classList.add('done'),reduced?50:1150));
+function toast(msg){const el=$('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800)}
+const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}}),{threshold:.13});document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+// A transparent, rotating internet globe with real country borders.
+async function initScene(){
+ const canvas=$('hero3d'); if(!canvas)return;
+ // Load a real WebGL 3D engine if the classic CDN script was blocked or failed.
+ if(!window.THREE){try{window.THREE=await import('https://cdn.jsdelivr.net/npm/three@0.152.2/+esm');}catch(loadError){console.warn('Three.js could not load; retaining the visual fallback.',loadError);canvas.style.display='none';return;}}
+ const wrap=$('scene-wrap'); let scene,camera,renderer,globe,raf,scrollSpin=0;
+ try{
+  scene=new THREE.Scene();
+  camera=new THREE.PerspectiveCamera(35,1,.1,100); camera.position.set(0,0,7.1);
+  renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,powerPreference:'high-performance'});document.body.classList.add('three-globe-ready');
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.8)); renderer.setClearColor(0x000000,0);
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  scene.add(new THREE.AmbientLight(0xffffff,1.45));
+  const key=new THREE.DirectionalLight(0xffe2c8,2.4);key.position.set(3,4,5);scene.add(key);
+  const rim=new THREE.PointLight(0xf16b36,22,16);rim.position.set(-3,1,3);scene.add(rim);
+  const rig=new THREE.Group();scene.add(rig);globe=new THREE.Group();rig.add(globe);
+  const R=1.72;
+  // A very light glass-like sphere keeps the orange outlines readable while staying transparent.
+  const shell=new THREE.Mesh(new THREE.SphereGeometry(R,80,56),new THREE.MeshPhysicalMaterial({color:0xf8f3eb,metalness:.08,roughness:.34,transparent:true,opacity:.20,side:THREE.DoubleSide,clearcoat:.8,clearcoatRoughness:.18,depthWrite:false}));globe.add(shell);
+  // Faint geographic graticule, kept behind the country borders.
+  const gridMat=new THREE.LineBasicMaterial({color:0x6c6258,transparent:true,opacity:.22});
+  const borderMat=new THREE.LineBasicMaterial({color:0xf16b36,transparent:true,opacity:.98});
+  const borderGlowMat=new THREE.LineBasicMaterial({color:0xf16b36,transparent:true,opacity:.18});
+  function surfacePoint(lon,lat,r=R*1.006){const lo=THREE.MathUtils.degToRad(lon),la=THREE.MathUtils.degToRad(lat);return new THREE.Vector3(-r*Math.cos(la)*Math.sin(lo),r*Math.sin(la),r*Math.cos(la)*Math.cos(lo));}
+  function addGeoLine(coords,material,r=R*1.008){
+   if(!coords||coords.length<2)return;
+   const pts=[]; for(const c of coords){if(Number.isFinite(c[0])&&Number.isFinite(c[1]))pts.push(surfacePoint(c[0],Math.max(-89.8,Math.min(89.8,c[1])),r));}
+   if(pts.length<2)return;
+   const geo=new THREE.BufferGeometry().setFromPoints(pts);globe.add(new THREE.Line(geo,material));
+  }
+  for(let lat=-60;lat<=60;lat+=30){const pts=[];for(let lon=-180;lon<=180;lon+=2)pts.push(surfacePoint(lon,lat,R*1.003));globe.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),gridMat));}
+  for(let lon=-150;lon<=180;lon+=30){const pts=[];for(let lat=-88;lat<=88;lat+=2)pts.push(surfacePoint(lon,lat,R*1.003));globe.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),gridMat));}
+  // Load real world country polygons and draw only their shared borders on the sphere.
+  // The fallback graticule still leaves a dimensional globe if the network is unavailable.
+  const topologyPromise=window.topojson?Promise.resolve(window.topojson):import('https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/+esm').then(m=>{window.topojson=m;return m;});
+  topologyPromise.then(topology=>fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(r=>{if(!r.ok)throw Error('Country map unavailable');return r.json();}).then(world=>{
+    const mesh=topology.mesh(world,world.objects.countries,(a,b)=>a!==b);
+    const addLinework=geometry=>{
+     if(geometry.type==='MultiLineString')geometry.coordinates.forEach(line=>addGeoLine(line,borderMat));
+     else if(geometry.type==='LineString')addGeoLine(geometry.coordinates,borderMat);
+     else if(geometry.type==='GeometryCollection')geometry.geometries.forEach(addLinework);
+    };
+    addLinework(mesh);
+    // A slightly larger soft stroke gives the borders an orange luminous edge.
+    const glowMesh=topology.mesh(world,world.objects.countries,(a,b)=>a!==b);
+    if(glowMesh.type==='MultiLineString')glowMesh.coordinates.forEach(line=>addGeoLine(line,borderGlowMat,R*1.002));
+   })).catch(err=>console.warn('Country border data could not be loaded; globe grid remains visible.',err));
+  // Tiny orange signal points and a restrained orbital ring make it feel like an internet globe.
+  const nodeMat=new THREE.MeshBasicMaterial({color:0xf16b36});
+  [[-122,37],[-74,40],[-3,52],[13,52],[31,30],[77,28],[103,1],[121,31],[139,36],[-46,-23],[151,-34],[18,-34]].forEach((p,i)=>{
+   const dot=new THREE.Mesh(new THREE.SphereGeometry(i%3===0?.035:.023,12,10),nodeMat);dot.position.copy(surfacePoint(p[0],p[1],R*1.018));globe.add(dot);
+  });
+  const orbit=new THREE.Mesh(new THREE.TorusGeometry(2.12,.009,6,180),new THREE.MeshBasicMaterial({color:0xf16b36,transparent:true,opacity:.48}));orbit.rotation.set(.88,.25,-.32);rig.add(orbit);
+  const orbit2=new THREE.Mesh(new THREE.TorusGeometry(2.23,.006,6,180),new THREE.MeshBasicMaterial({color:0x6c6258,transparent:true,opacity:.24}));orbit2.rotation.set(1.18,-.35,.22);rig.add(orbit2);
+  const resize=()=>{const w=Math.max(1,wrap.clientWidth),h=Math.max(1,wrap.clientHeight);renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();};resize();window.addEventListener('resize',resize);
+  const updateScroll=()=>{const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);scrollSpin=(window.scrollY/max)*Math.PI*2.7;};window.addEventListener('scroll',updateScroll,{passive:true});updateScroll();
+  let mx=0,my=0,tx=0,ty=0;window.addEventListener('pointermove',e=>{mx=(e.clientX/innerWidth-.5)*.16;my=(e.clientY/innerHeight-.5)*.12;},{passive:true});
+  let last=0;function animate(t){raf=requestAnimationFrame(animate);if(reduced&&t-last<1000/20)return;last=t;tx+=(mx-tx)*.025;ty+=(my-ty)*.025;
+   // Rotation follows the page scroll; subtle idle motion keeps the sphere alive between scrolls.
+   globe.rotation.y=scrollSpin+t*.000045+tx;globe.rotation.x=.12+ty+Math.sin(t*.00025)*.025;
+   rig.rotation.y=tx*.35;rig.rotation.x=ty*.35;orbit.rotation.z=-.32-scrollSpin*.16;orbit2.rotation.z=.22+scrollSpin*.11;
+   renderer.render(scene,camera);
+  }animate(0);
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelAnimationFrame(raf);else animate(0)});
+ }catch(err){console.warn('3D globe unavailable; keeping the rest of LinkPulse usable.',err);canvas.style.display='none';}
+}initScene();
+// Fallback globe rotation is independent of Three.js and the backend.
+(()=>{const globe=document.getElementById('globe-fallback-spin');if(!globe)return;let angle=0,target=0;const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;function update(){const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);target=(window.scrollY/max)*360; if(!reduced)target+=Math.sin(performance.now()*.00025)*3;angle+=(target-angle)*.08;globe.style.transform=`rotate(${angle*.035}deg) rotateY(${angle}deg)`;requestAnimationFrame(update)}window.addEventListener('scroll',()=>{const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);target=(window.scrollY/max)*360},{passive:true});update()})();
+// Small character burst on pointer interaction; reduced-motion users get a quiet page.
+if(!window.matchMedia('(prefers-reduced-motion: reduce)').matches){document.addEventListener('pointerdown',e=>{if(e.target.closest('input,textarea,select,button,a,[contenteditable="true"]'))return;const glyphs=['↗','+','·','0','1','✳','⌁','/'];for(let i=0;i<7;i++){const g=document.createElement('span');g.className='pulse-glyph';g.textContent=glyphs[Math.floor(Math.random()*glyphs.length)];g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';g.style.setProperty('--dx',(Math.random()*100-50)+'px');g.style.setProperty('--dy',(Math.random()*-100-12)+'px');g.style.setProperty('--rot',(Math.random()*90-45)+'deg');document.body.appendChild(g);g.addEventListener('animationend',()=>g.remove(),{once:true})}})}
+const API='';
+const OWNER_STORAGE_KEY='linkpulse_owner_key_v1';
+function getOwnerKey(){let key=localStorage.getItem(OWNER_STORAGE_KEY);if(!key){const bytes=new Uint8Array(32);crypto.getRandomValues(bytes);key=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');localStorage.setItem(OWNER_STORAGE_KEY,key)}return key}
+const OWNER_KEY=getOwnerKey();
+async function api(path,opts={}){const res=await fetch(API+path,{...opts,headers:{'Content-Type':'application/json','X-Owner-Key':OWNER_KEY,...(opts.headers||{})}});let data={};try{data=await res.json()}catch{}if(!res.ok)throw new Error(data.detail||data.error||`Request failed (${res.status})`);return data}
+function safeUrl(s){try{return new URL(s).toString()}catch{return s}}function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('link-form').addEventListener('submit',async e=>{
+ e.preventDefault();
+ const btn=$('create-btn'),result=$('create-result'),original=$('input-url').value.trim();
+ if(!/^https?:\/\//i.test(original)){toast('Enter the full destination URL, starting with https:// or http://.');$('input-url').focus();return}
+ btn.disabled=true;btn.innerHTML='Creating link… <span class="arrow">↗</span>';result.classList.remove('show');result.replaceChildren();
+ try{
+  const body={original_url:original,title:$('input-title').value.trim()||'Campaign Link',custom_alias:$('input-alias').value.trim(),password:$('input-password').value,click_limit:$('input-limit').value||null,expires_at:$('input-expiry').value?new Date($('input-expiry').value).toISOString():null};
+  const data=await api('/api/links/create',{method:'POST',body:JSON.stringify(body)});
+  const short=data.short_url||new URL('/'+data.short_code,location.href).href;
+  result.innerHTML=`<strong>✓ YOUR LINK IS READY</strong><a class="short-url-display" href="${escapeHtml(short)}" target="_blank" rel="noopener noreferrer">${escapeHtml(short)}</a><div class="alias-hint">Your alias is <b>/${escapeHtml(data.short_code)}</b>. The full address includes your domain; that is what people can open from another device.</div><div class="result-actions"><button type="button" class="mini-btn" id="copy-short">Copy short link</button><button type="button" class="mini-btn" id="make-qr">Create QR code&nbsp; ↗</button></div><div id="qr-holder" style="display:none;margin-top:16px"></div>`;
+  result.classList.add('show');
+  $('copy-short').onclick=async()=>{try{await navigator.clipboard.writeText(short);toast('Full short URL copied')}catch{window.prompt('Copy your short link:',short)}};
+  $('make-qr').onclick=()=>openQRStudio(short,data.short_code);
+  $('link-form').reset();await loadLinks();toast('Your short link is ready.');
+ }catch(err){result.textContent=err.message||'Could not create the link. Check that the backend is running.';result.style.display='block';result.classList.add('show');result.style.background='#fff0e8';result.style.borderColor='#edbba5';result.style.color='#8b351c';toast(err.message||'Link creation failed.');}
+ finally{btn.disabled=false;btn.innerHTML='Create link <span class="arrow">↗</span>'}
+});
+
+function openQRStudio(short,code){
+ const holder=$('qr-holder');holder.style.display='block';
+ holder.innerHTML=`<div class="qr-studio-ui">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px"><div><strong style="font-size:17px;color:#21170f;display:block;margin:0">QR Design Studio</strong><div style="font-size:11px;color:#827263;margin-top:5px">Live preview — every setting updates the code</div></div><span style="font:10px var(--mono);color:#9a593c;white-space:nowrap">LINKPULSE / QR</span></div>
+  <div class="qr-control-grid">
+   <label>PRINT / DOT COLOR<input id="qr-fg" type="color" value="#21170f"></label>
+   <label>BACKGROUND COLOR<input id="qr-bg" type="color" value="#ffffff"></label>
+   <label>DOT STYLE<select id="qr-shape"><option value="square">Square</option><option value="dots">Dots</option><option value="rounded">Rounded</option><option value="classy">Classy</option><option value="extra-rounded">Extra rounded</option></select></label>
+   <label>CORNER / EYE STYLE<select id="qr-eye"><option value="square">Square</option><option value="dot">Dot</option><option value="extra-rounded">Rounded</option></select></label>
+   <label>EXPORT SIZE <span id="qr-size-value">290 px</span><input id="qr-size" type="range" min="280" max="1600" step="10" value="290"></label>
+   <label>QUIET BORDER <span id="qr-margin-value">4 units</span><input id="qr-margin" type="range" min="0" max="12" step="1" value="4"></label>
+  </div>
+  <label style="display:flex;align-items:center;gap:9px;margin:5px 0 14px;color:#655647"><input id="qr-gradient" type="checkbox" style="width:auto;accent-color:#f16b36"> Use a warm orange gradient</label>
+  <label style="margin-bottom:14px">ADD A CENTER LOGO / IMAGE (OPTIONAL)<input id="qr-logo" type="file" accept="image/png,image/jpeg,image/webp" style="display:block;width:100%;font-size:12px;margin-top:8px"><small style="display:block;margin-top:5px">A small image is placed in the centre of the QR code. It does not replace the QR pattern; this helps preserve scan reliability. Use PNG, JPG or WebP, up to 2 MB.</small></label>
+  <div class="qr-preview-shell"><div id="qr-preview" aria-label="Live QR code preview"></div></div>
+  <div id="qr-status" class="qr-note" role="status" aria-live="polite">Preparing your QR code…</div>
+  <div class="qr-action-row"><button type="button" id="qr-download-png" class="mini-btn">Download PNG</button><button type="button" id="qr-download-svg" class="mini-btn">Download SVG</button><button type="button" id="qr-reset" class="mini-btn">Reset design</button></div>
+ </div>`;
+ const q=id=>holder.querySelector('#'+id);let logoData='',timer=null,qr=null,buildToken=0;
+ const status=msg=>{q('qr-status').textContent=msg};
+ function build(){
+  const token=++buildToken;
+  if(!window.QRCodeStyling){status('Loading QR engine…');if(window.__linkPulseQrReady){window.__linkPulseQrReady.then(ok=>{if(ok)build();else status('QR engine could not load. Check your internet connection and reload the page.');});}else{status('QR engine is unavailable. Reload the page and try again.');}return}
+  const size=Number(q('qr-size').value),margin=Number(q('qr-margin').value),fg=q('qr-fg').value,bg=q('qr-bg').value,gradient=q('qr-gradient').checked;
+  q('qr-size-value').textContent=size+' px';q('qr-margin-value').textContent=margin+' units';
+  const options={width:size,height:size,type:'svg',data:short,margin:margin*4,qrOptions:{errorCorrectionLevel:logoData?'H':'Q',mode:'Byte'},image:logoData||undefined,imageOptions:{hideBackgroundDots:true,imageSize:logoData?.18:0.22,margin:6,crossOrigin:'anonymous'},dotsOptions:{type:q('qr-shape').value,color:fg,...(gradient?{gradient:{type:'linear',rotation:0,colorStops:[{offset:0,color:fg},{offset:1,color:'#f16b36'}]}}:{})},backgroundOptions:{color:bg},cornersSquareOptions:{type:q('qr-eye').value,color:fg},cornersDotOptions:{type:q('qr-eye').value==='dot'?'dot':'square',color:fg}};
+  try{
+   if(!qr){qr=new QRCodeStyling(options);q('qr-preview').replaceChildren();qr.append(q('qr-preview'))}else qr.update(options);
+   const contrast=fg.toLowerCase()===bg.toLowerCase();status(contrast?'⚠ Foreground and background match; change one colour for a readable QR code.':'Live preview ready. Scan it with your phone before printing. Dark foreground + light background usually scans best.');
+  }catch(err){status('Could not render the QR code. Please reset the design or reload the page.');console.error('QR rendering error',err)}
+ }
+ const schedule=()=>{clearTimeout(timer);timer=setTimeout(build,80)};
+ ['qr-fg','qr-bg','qr-shape','qr-eye','qr-gradient','qr-size','qr-margin'].forEach(id=>q(id).addEventListener('input',schedule));
+ q('qr-logo').addEventListener('change',()=>{const file=q('qr-logo').files[0];if(!file){logoData='';schedule();return}if(file.size>2*1024*1024){status('That image is larger than 2 MB. Choose a smaller image.');q('qr-logo').value='';return}if(!/^image\/(png|jpeg|webp)$/.test(file.type)){status('Choose a PNG, JPG or WebP image.');q('qr-logo').value='';return}const reader=new FileReader();reader.onload=()=>{logoData=String(reader.result);schedule()};reader.onerror=()=>status('Could not read that image. Try another file.');reader.readAsDataURL(file)});
+ q('qr-download-png').onclick=()=>{if(!qr||!q('qr-preview').querySelector('svg,canvas')){status('Your QR code is still rendering. Please wait a moment and try again.');return}try{qr.download({name:'linkpulse-'+String(code).replace(/[^a-zA-Z0-9_-]/g,'_'),extension:'png'})}catch(e){status('PNG export failed. Try SVG export or reload the page.')}};
+ q('qr-download-svg').onclick=()=>{if(!qr||!q('qr-preview').querySelector('svg,canvas')){status('Your QR code is still rendering. Please wait a moment and try again.');return}try{qr.download({name:'linkpulse-'+String(code).replace(/[^a-zA-Z0-9_-]/g,'_'),extension:'svg'})}catch(e){status('SVG export failed. Please try again.')}};
+ q('qr-reset').onclick=()=>{q('qr-fg').value='#21170f';q('qr-bg').value='#ffffff';q('qr-shape').value='square';q('qr-eye').value='square';q('qr-size').value='290';q('qr-margin').value='4';q('qr-gradient').checked=false;q('qr-logo').value='';logoData='';schedule()};
+ build();holder.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});
+}
+async function loadLinks(){const body=$('links-body');try{const data=await api('/api/links/list');const rows=data.links||[];$('link-count').textContent=`YOUR RECENT LINKS / ${String(rows.length).padStart(2,'0')} CONNECTION${rows.length===1?'':'S'}`;if(!rows.length){body.innerHTML='<tr><td colspan="6" class="empty-state">No links in this browser yet. Links created here will appear in your personal list.</td></tr>';return}body.innerHTML=rows.map(l=>{const short=new URL('/'+l.short_code,location.href).href;const active=!!l.is_active;return `<tr><td><strong>${escapeHtml(l.title||'Untitled link')}</strong><br><a class="code" href="${escapeHtml(short)}" target="_blank" rel="noopener">/${escapeHtml(l.short_code)}</a><br><span class="link-state ${active?'is-active':'is-paused'}">${active?'ACTIVE':'PAUSED'}</span></td><td><div class="url-cell" title="${escapeHtml(l.original_url)}">${escapeHtml(l.original_url)}</div></td><td>${Number(l.clicks_count||0).toLocaleString()}</td><td>${escapeHtml(l.created_at||'—')}</td><td><button class="mini-btn" data-analytics="${escapeHtml(l.short_code)}" style="border-color:#d5c6b5;color:#4b392b">View ↗</button></td><td><div class="owner-actions"><button class="mini-btn" data-owner-toggle="${escapeHtml(l.short_code)}" style="border-color:${active?'#d7a9a0':'#b8cdb3'};color:${active?'#9e352b':'#365d3b'}">${active?'Pause':'Resume'}</button><button class="mini-btn" data-owner-delete="${escapeHtml(l.short_code)}" style="border-color:#e4b5ac;color:#9e352b">Delete ✕</button></div></td></tr>`}).join('');body.querySelectorAll('[data-analytics]').forEach(b=>b.addEventListener('click',()=>showAnalytics(b.dataset.analytics)));body.querySelectorAll('[data-owner-toggle]').forEach(b=>b.addEventListener('click',async()=>{b.disabled=true;try{const d=await api('/api/links/'+encodeURIComponent(b.dataset.ownerToggle)+'/toggle',{method:'POST'});toast(d.message||'Link status updated.');await loadLinks()}catch(err){toast(err.message)}finally{b.disabled=false}}));body.querySelectorAll('[data-owner-delete]').forEach(b=>b.addEventListener('click',async()=>{const code=b.dataset.ownerDelete;if(!confirm(`Permanently delete /${code}? Its click history will also be removed.`))return;b.disabled=true;try{const d=await api('/api/links/'+encodeURIComponent(code),{method:'DELETE'});toast(d.message||'Link deleted.');await loadLinks()}catch(err){toast(err.message);b.disabled=false}}))}catch(err){$('link-count').textContent='YOUR RECENT LINKS / SERVICE NOT CONNECTED';body.innerHTML=`<tr><td colspan="6" class="empty-state">${escapeHtml(err.message)}<br><br>Refresh the page if your browser owner session was reset.</td></tr>`}}
+async function showAnalytics(code){
+ const button=document.querySelector(`[data-analytics="${CSS.escape(code)}"]`);if(!button)return;
+ const existing=button.closest('tr').nextElementSibling;if(existing?.classList.contains('analytics-row')){existing.remove();button.textContent='View ↗';return}
+ button.textContent='Loading…';button.disabled=true;
+ try{const d=await api('/api/links/'+encodeURIComponent(code)+'/analytics');const row=document.createElement('tr');row.className='analytics-row';const cell=document.createElement('td');cell.colSpan=6;
+ const recent=(d.recent_clicks||[]).map(c=>`<tr><td>${escapeHtml(c.time)}</td><td>${escapeHtml(c.device)}</td><td>${escapeHtml(c.browser)}</td><td>${escapeHtml(c.referrer)}</td><td>${c.is_bot?'Filtered bot':'Human / likely human'}</td></tr>`).join('');
+ cell.innerHTML=`<div class="analytics-panel"><strong>${escapeHtml(d.title||'Link analytics')} · /${escapeHtml(d.short_code)}</strong><div class="analytics-stats"><div class="analytics-stat"><b>${Number(d.total_clicks||0).toLocaleString()}</b><span>ALL REDIRECTS</span></div><div class="analytics-stat"><b>${Number(d.clean_human_clicks||0).toLocaleString()}</b><span>HUMAN / LIKELY</span></div><div class="analytics-stat"><b>${Number(d.filtered_bots||0).toLocaleString()}</b><span>FILTERED BOTS</span></div><div class="analytics-stat"><b>${Number(d.devices?.Desktop||0)}</b><span>DESKTOP</span></div><div class="analytics-stat"><b>${Number(d.devices?.Mobile||0)}</b><span>MOBILE</span></div><div class="analytics-stat"><b>${Number(d.devices?.Tablet||0)}</b><span>TABLET</span></div></div><p class="analytics-note">Recent recorded activity (up to 100 events). LinkPulse records device/browser/referrer and time—not a person's real-world identity or IP address. Bot detection is heuristic, not perfect.</p><p class="analytics-note"><strong>Browser mix:</strong> ${Object.entries(d.browsers||{}).map(([name,count])=>`${escapeHtml(name)}: ${Number(count)}`).join(' · ')||'No browser data yet'}</p><div style="overflow:auto"><table class="analytics-table"><thead><tr><th>Time (UTC)</th><th>Device</th><th>Browser</th><th>Referrer</th><th>Classification</th></tr></thead><tbody>${recent||'<tr><td colspan="5">No click events recorded yet.</td></tr>'}</tbody></table></div></div>`;row.appendChild(cell);button.closest('tr').after(row);button.textContent='Hide ↑';
+ }catch(e){toast(e.message)}finally{button.disabled=false}}
+$('refresh-links').addEventListener('click',loadLinks);loadLinks();
+
+// Account dialog: regular users stay on the homepage; admin credentials redirect to Governance Studio.
+let authMode='login',currentAccount=null;
+const authModal=$('auth-modal');
+function setAuthMode(mode){authMode=mode;$('auth-title').textContent=mode==='login'?'Welcome back.':'Create your account.';$('auth-subtitle').textContent=mode==='login'?'Sign in to keep your links connected to your account across devices.':'Create an account to manage your links from different devices.';$('auth-submit').textContent=mode==='login'?'Sign in ↗':'Create account ↗';$('auth-switch-label').textContent=mode==='login'?'New to LinkPulse?':'Already have an account?';$('auth-switch').textContent=mode==='login'?'Create an account':'Sign in';$('auth-password').autocomplete=mode==='login'?'current-password':'new-password';$('auth-password').minLength=mode==='login'?1:10;$('auth-message').textContent=''}
+function openAuth(){authModal.hidden=false;setAuthMode('login');setTimeout(()=>$('auth-email').focus(),20)}function closeAuth(){authModal.hidden=true}
+$('auth-open').addEventListener('click',()=>{if(currentAccount?.email){location.hash='#your-links'}else openAuth()});$('auth-close').addEventListener('click',closeAuth);authModal.addEventListener('click',e=>{if(e.target===authModal)closeAuth()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!authModal.hidden)closeAuth()});$('auth-switch').addEventListener('click',()=>setAuthMode(authMode==='login'?'register':'login'));
+function updateAccountUI(){const open=$('auth-open'),out=$('auth-logout');if(currentAccount?.email){open.textContent=currentAccount.email+' · Account';out.hidden=false}else{open.textContent='Log in / Sign up ↗';out.hidden=true}}
+async function checkAccount(){try{const d=await api('/api/auth/session');currentAccount=d.authenticated?d.user:null;updateAccountUI()}catch{currentAccount=null;updateAccountUI()}}
+$('auth-form').addEventListener('submit',async e=>{e.preventDefault();const btn=$('auth-submit');btn.disabled=true;$('auth-message').textContent='Checking credentials…';try{const endpoint=authMode==='register'?'/api/auth/register':'/api/auth/login';const d=await api(endpoint,{method:'POST',body:JSON.stringify({email:$('auth-email').value.trim(),password:$('auth-password').value})});if(d.user?.role==='admin'||d.redirect==='/admin'){location.assign('/admin');return}currentAccount=d.user||null;closeAuth();$('auth-password').value='';updateAccountUI();await loadLinks();toast(authMode==='register'?'Account created. Your links are now tied to your account.':'Signed in. Your account links are ready.')}catch(err){$('auth-message').textContent=err.message}finally{btn.disabled=false}});
+$('auth-logout').addEventListener('click',async()=>{try{await api('/api/auth/logout',{method:'POST'});currentAccount=null;updateAccountUI();await loadLinks();toast('Signed out. Browser-owned anonymous links remain available in this browser.')}catch(err){toast(err.message)}});
+$('csv-import').addEventListener('click',()=>$('csv-import-file').click());$('csv-import-file').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;const form=new FormData();form.append('file',file);try{const res=await fetch('/api/links/import-csv',{method:'POST',headers:{'X-Owner-Key':OWNER_KEY},body:form});const d=await res.json();if(!res.ok)throw new Error(d.detail||'CSV import failed');await loadLinks();toast(`Imported ${d.created_count} link(s); ${d.error_count} row(s) need attention.`);if(d.errors?.length)alert('CSV rows not imported:\n'+d.errors.map(x=>`Row ${x.row}: ${x.error}`).join('\n'))}catch(err){toast(err.message)}finally{e.target.value=''}});
+checkAccount();
+})();
+</script><script>
+/* LinkPulse ambient scroll field: scroll depth drives parallax, orbit rotation and signal travel. */
+(()=>{
+ const canvas=document.getElementById('scroll-flow-bg');
+ if(!canvas) return;
+ const ctx=canvas.getContext('2d',{alpha:true}); if(!ctx) return;
+ const reduced=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+ let w=0,h=0,dpr=1,scroll=0,targetScroll=0,mx=0,my=0,tx=0,ty=0,raf=0,last=0;
+ const nodes=[]; const NODE_COUNT=Math.min(68,Math.max(38,Math.round(innerWidth/20)));
+ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+ function resize(){
+  dpr=Math.min(window.devicePixelRatio||1,1.5);w=innerWidth;h=innerHeight;
+  canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);
+  canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(dpr,0,0,dpr,0,0);
+  nodes.length=0;for(let i=0;i<NODE_COUNT;i++)nodes.push({x:Math.random()*w,y:Math.random()*h,r:.8+Math.random()*2.1,s:.12+Math.random()*.42,p:Math.random()*Math.PI*2,depth:.3+Math.random()*1.7});
+ }
+ function readScroll(){const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);targetScroll=clamp(scrollY/max,0,1)}
+ function draw(now){
+  raf=0;if(document.hidden)return;
+  const dt=last?Math.min(40,now-last):16;last=now;
+  scroll+=(targetScroll-scroll)*.075;mx+=(tx-mx)*.045;my+=(ty-my)*.045;
+  ctx.clearRect(0,0,w,h);
+  const motion=reduced?0:1;
+  // Curved orbit bands shift at different rates, creating layered parallax while scrolling.
+  for(let k=0;k<6;k++){
+   const phase=now*.00012*(k%2?1:-1)+scroll*(3.5+k*.42)+k*1.18;
+   const cx=w*(.14+.145*k)+Math.sin(phase)*w*.075+mx*.018*(k+1);
+   const cy=((h*(.10+k*.185)-scroll*h*(1.15+k*.20)+Math.sin(phase*.8)*h*.045+my*.014*(k+1))%(h*2.2)+h*2.2)%(h*2.2)-h*.55;
+   ctx.save();ctx.translate(cx,cy);ctx.rotate(Math.sin(phase)*.17+scroll*.16);
+   ctx.beginPath();ctx.ellipse(0,0,w*(.16+k*.025),h*(.065+k*.009),0,0,Math.PI*2);
+   ctx.strokeStyle=k%2?'rgba(241,91,35,.34)':'rgba(93,58,35,.24)';ctx.lineWidth=k===Math.round(scroll*5)?2.4:1.55;ctx.stroke();ctx.restore();
+  }
+  const pts=[];
+  for(let i=0;i<nodes.length;i++){
+   const n=nodes[i];if(!reduced){n.y-=n.s*(.28+scroll*.9)*dt/16;n.x+=Math.sin(now*.00028+n.p)*.18*dt/16}
+   if(n.y<-12)n.y=h+12;if(n.x<-12)n.x=w+12;if(n.x>w+12)n.x=-12;
+   const x=n.x+Math.sin(scroll*6+n.p)*w*.012*n.depth+mx*.018*n.depth;
+   const y=n.y+Math.cos(scroll*5+n.p)*h*.016*n.depth+my*.018*n.depth;
+   pts.push([x,y,n]);ctx.beginPath();ctx.arc(x,y,n.r,0,Math.PI*2);
+   ctx.fillStyle=i%4===0?'rgba(245,91,36,.98)':'rgba(83,58,40,.72)';ctx.fill();
+  }
+  // Connect nearby particles; links brighten slightly as the page progresses.
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+   const dx=pts[i][0]-pts[j][0],dy=pts[i][1]-pts[j][1],d=Math.hypot(dx,dy);
+   if(d<clamp(w*.085,78,120)){ctx.beginPath();ctx.moveTo(pts[i][0],pts[i][1]);ctx.lineTo(pts[j][0],pts[j][1]);ctx.strokeStyle=`rgba(176,105,64,${(1-d/clamp(w*.11,100,165))*(.22+scroll*.10)})`;ctx.lineWidth=1.05;ctx.stroke()}
+  }
+  // A glowing signal moves across the viewport based on scroll progress.
+  const bx=w*(.08+.84*((scroll*1.8+(now*.000025))%1));
+  const by=((h*(.12+scroll*2.5)+Math.sin(now*.0005)*h*.09)%(h+80))-40;
+  const radius=36+Math.sin(now*.002)*5;const glow=ctx.createRadialGradient(bx,by,0,bx,by,radius);
+  glow.addColorStop(0,'rgba(255,91,34,.42)');glow.addColorStop(.42,'rgba(241,107,54,.19)');glow.addColorStop(1,'rgba(241,107,54,0)');
+  ctx.fillStyle=glow;ctx.fillRect(bx-radius,by-radius,radius*2,radius*2);
+  if(!reduced)raf=requestAnimationFrame(draw);
+ }
+ function schedule(){if(!reduced&&!raf&&!document.hidden)raf=requestAnimationFrame(draw);else if(reduced)draw(performance.now())}
+ addEventListener('resize',()=>{resize();schedule()},{passive:true});
+ addEventListener('scroll',()=>{readScroll();schedule()},{passive:true});
+ addEventListener('pointermove',e=>{tx=e.clientX-w/2;ty=e.clientY-h/2;schedule()},{passive:true});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden){if(raf)cancelAnimationFrame(raf);raf=0;last=0}else schedule()});
+ resize();readScroll();schedule();
+})();
+</script>
+</body></html>
