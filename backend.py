@@ -15,10 +15,10 @@ import secrets
 import string
 import threading
 import time
-import smtplib
-import ssl
-from email.message import EmailMessage
+import json
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 from dotenv import load_dotenv
 from flask import Flask, abort, jsonify, redirect, request, send_from_directory, session
@@ -28,14 +28,15 @@ from user_agents import parse
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
-print("Admin email configured:", bool(os.getenv("ADMIN_LOGIN_EMAIL", "").strip()))
-print("Admin password configured:", bool(os.getenv("ADMIN_LOGIN_PASSWORD", "")))
-print(
-    "Admin email:",
-    os.getenv("ADMIN_LOGIN_EMAIL", "").strip().lower()
-)
 STATIC_DIR = os.path.join(BASE_DIR, "static")
-DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'links.db')}")
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'links.db')}").strip()
+# Render/hosted PostgreSQL providers may supply postgres:// or postgresql:// URLs.
+# The requirements file includes psycopg 3, so use its SQLAlchemy dialect explicitly.
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL[len("postgres://"):]
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL[len("postgresql://"):]
+
 API_KEY_SECRET = os.getenv("LINKPULSE_API_KEY", "")  # Legacy env variable; never exposed to browser.
 ADMIN_KEY_SECRET = os.getenv("ADMIN_MASTER_KEY", "")
 FLASK_SECRET = os.getenv("FLASK_SECRET_KEY", "")
@@ -138,13 +139,25 @@ if DATABASE_URL.startswith("sqlite"):
             with engine.begin() as _conn:
                 _conn.execute(text("ALTER TABLE click_events ADD COLUMN referrer VARCHAR(500) DEFAULT 'Direct / unknown'"))
 else:
-    # Keep existing deployments compatible when they use a non-SQLite SQLAlchemy URL.
+    # Add columns introduced by LinkPulse upgrades when using PostgreSQL or another
+    # SQLAlchemy database. create_all() creates tables, but does not alter old ones.
     _inspector = inspect(engine)
-    if "users" in _inspector.get_table_names():
-        _user_columns = {column["name"] for column in _inspector.get_columns("users")}
-        if "email_verified" not in _user_columns:
-            with engine.begin() as _conn:
+    _table_names = set(_inspector.get_table_names())
+    with engine.begin() as _conn:
+        if "users" in _table_names:
+            _user_columns = {column["name"] for column in inspect(engine).get_columns("users")}
+            if "email_verified" not in _user_columns:
                 _conn.execute(text("ALTER TABLE users ADD COLUMN email_verified BOOLEAN NOT NULL DEFAULT TRUE"))
+        if "links" in _table_names:
+            _link_columns = {column["name"] for column in inspect(engine).get_columns("links")}
+            if "owner_key_hash" not in _link_columns:
+                _conn.execute(text("ALTER TABLE links ADD COLUMN owner_key_hash VARCHAR(64)"))
+            if "owner_user_id" not in _link_columns:
+                _conn.execute(text("ALTER TABLE links ADD COLUMN owner_user_id INTEGER REFERENCES users(id)"))
+        if "click_events" in _table_names:
+            _click_columns = {column["name"] for column in inspect(engine).get_columns("click_events")}
+            if "referrer" not in _click_columns:
+                _conn.execute(text("ALTER TABLE click_events ADD COLUMN referrer VARCHAR(500) DEFAULT 'Direct / unknown'"))
 with SessionLocal() as db:
     if not db.query(BlockedDomainModel).first():
         db.add_all([
@@ -479,37 +492,57 @@ def otp_code_digest(email: str, code: str) -> str:
     return hmac.new(FLASK_SECRET.encode("utf-8"), f"{email}:{code}".encode("utf-8"), hashlib.sha256).hexdigest()
 
 
+class BrevoEmailError(RuntimeError):
+    """Safe, user-independent error raised when Brevo rejects an email request."""
+
+
 def send_verification_email(to_email: str, code: str) -> None:
-    """Send a one-time verification code through Brevo SMTP."""
-    host = os.getenv("SMTP_HOST", "smtp-relay.brevo.com").strip()
-    port = int(os.getenv("SMTP_PORT", "587"))
-    username = os.getenv("SMTP_LOGIN", "").strip()
-    smtp_key = os.getenv("SMTP_KEY", "")
+    """Send an OTP using Brevo's HTTPS API (no outbound SMTP port required)."""
+    api_key = os.getenv("BREVO_API_KEY", "").strip()
     sender = os.getenv("MAIL_FROM_EMAIL", "").strip()
     sender_name = os.getenv("MAIL_FROM_NAME", "LinkPulse").strip() or "LinkPulse"
-    if not all((host, username, smtp_key, sender)):
-        raise RuntimeError("Email verification is not configured yet. The project owner must add Brevo SMTP settings.")
-    message = EmailMessage()
-    message["Subject"] = "Your LinkPulse verification code"
-    message["From"] = f"{sender_name} <{sender}>"
-    message["To"] = to_email
-    message.set_content(
+    if not api_key or not sender:
+        raise BrevoEmailError("Email verification is not configured. Set BREVO_API_KEY and MAIL_FROM_EMAIL.")
+
+    text_body = (
         f"Your LinkPulse verification code is {code}.\n\n"
-        "It expires in 10 minutes and can be used only once. If you did not request this code, ignore this email."
+        "It expires in 10 minutes and can be used only once. "
+        "If you did not request this code, ignore this email."
     )
-    context = ssl.create_default_context()
-    timeout = 15
-    if port == 465:
-        with smtplib.SMTP_SSL(host, port, timeout=timeout, context=context) as smtp:
-            smtp.login(username, smtp_key)
-            smtp.send_message(message)
-    else:
-        with smtplib.SMTP(host, port, timeout=timeout) as smtp:
-            smtp.ehlo()
-            smtp.starttls(context=context)
-            smtp.ehlo()
-            smtp.login(username, smtp_key)
-            smtp.send_message(message)
+    html_body = (
+        "<!doctype html><html><body style=\"font-family:Arial,sans-serif;color:#2b1e16\">"
+        "<h2>Your LinkPulse verification code</h2>"
+        f"<p style=\"font-size:28px;font-weight:700;letter-spacing:6px\">{code}</p>"
+        "<p>This code expires in 10 minutes and can be used only once.</p>"
+        "<p>If you did not request this code, you can ignore this email.</p>"
+        "</body></html>"
+    )
+    payload = {
+        "sender": {"name": sender_name, "email": sender},
+        "to": [{"email": to_email}],
+        "subject": "Your LinkPulse verification code",
+        "textContent": text_body,
+        "htmlContent": html_body,
+    }
+    req = Request(
+        "https://api.brevo.com/v3/smtp/email",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "accept": "application/json",
+            "api-key": api_key,
+            "content-type": "application/json",
+        },
+        method="POST",
+    )
+    try:
+        with urlopen(req, timeout=20) as response:
+            if not 200 <= response.status < 300:
+                raise BrevoEmailError(f"Brevo returned HTTP {response.status}.")
+    except HTTPError as exc:
+        # Do not log or return raw provider responses; they may contain sensitive details.
+        raise BrevoEmailError(f"Brevo rejected the email request (HTTP {exc.code}).") from None
+    except (URLError, TimeoutError, OSError) as exc:
+        raise BrevoEmailError("Could not reach Brevo over HTTPS. Check the network and try again.") from None
 
 
 @app.post("/api/auth/register")
@@ -547,17 +580,11 @@ def register_user():
         db.commit()
         try:
             send_verification_email(email, code)
-        except smtplib.SMTPAuthenticationError as exc:
-            db.query(EmailOTPModel).filter(EmailOTPModel.email == email).delete(synchronize_session=False)
-            db.commit()
-            # Log the SMTP response code only; never log credentials or the full response.
-            app.logger.error("Brevo SMTP authentication rejected credentials (SMTP code %s). Check SMTP_LOGIN and SMTP_KEY.", getattr(exc, "smtp_code", "unknown"))
-            return jsonify({"detail": "Brevo rejected the SMTP login. Check SMTP_LOGIN and SMTP_KEY in .env, then restart the backend."}), 503
         except Exception as exc:
             db.query(EmailOTPModel).filter(EmailOTPModel.email == email).delete(synchronize_session=False)
             db.commit()
             app.logger.error("Brevo verification email failed: %s", type(exc).__name__)
-            return jsonify({"detail": "We could not send the verification email. Check Brevo SMTP settings and sender verification, then try again."}), 503
+            return jsonify({"detail": "We could not send the verification email. Check BREVO_API_KEY and that MAIL_FROM_EMAIL is a verified Brevo sender, then try again."}), 503
         return jsonify({"status": "verification_sent", "email": email,
             "message": "We sent a 6-digit verification code. It expires in 10 minutes."}), 200
     finally:
@@ -618,16 +645,13 @@ def resend_otp():
         if not pending:
             return jsonify({"detail": "No active verification was found. Please start sign-up again."}), 400
         code = f"{secrets.randbelow(1_000_000):06d}"
-        # Send first; only replace the active code after SMTP confirms delivery.
-        # This avoids invalidating the previous code when SMTP is unavailable.
+        # Send first; only replace the active code after Brevo accepts the request.
+        # This avoids invalidating the previous code when the email API is unavailable.
         try:
             send_verification_email(email, code)
-        except smtplib.SMTPAuthenticationError as exc:
-            app.logger.error("Brevo SMTP authentication rejected credentials during resend (SMTP code %s).", getattr(exc, "smtp_code", "unknown"))
-            return jsonify({"detail": "Brevo rejected the SMTP login. Check SMTP_LOGIN and SMTP_KEY in .env, then restart the backend."}), 503
         except Exception as exc:
             app.logger.error("Brevo resend failed: %s", type(exc).__name__)
-            return jsonify({"detail": "We could not send another email. Check Brevo SMTP settings and sender verification, then try again."}), 503
+            return jsonify({"detail": "We could not send another email. Check BREVO_API_KEY and the verified sender, then try again."}), 503
         pending.code_hash = otp_code_digest(email, code)
         pending.expires_at = datetime.utcnow() + timedelta(minutes=10)
         pending.attempts = 0
@@ -928,5 +952,5 @@ def handle_redirect(code):
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", "8000"))
-    print(f"\nLinkPulse is running at http://127.0.0.1:{port}\n")
+    print(f"\nLinkPulse server starting on port {port}\n")
     app.run(host=os.getenv("HOST", "127.0.0.1"), port=port, debug=False)
