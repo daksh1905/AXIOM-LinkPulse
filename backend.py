@@ -26,8 +26,14 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, c
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 from user_agents import parse
 
-load_dotenv()
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+print("Admin email configured:", bool(os.getenv("ADMIN_LOGIN_EMAIL", "").strip()))
+print("Admin password configured:", bool(os.getenv("ADMIN_LOGIN_PASSWORD", "")))
+print(
+    "Admin email:",
+    os.getenv("ADMIN_LOGIN_EMAIL", "").strip().lower()
+)
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'links.db')}")
 API_KEY_SECRET = os.getenv("LINKPULSE_API_KEY", "")  # Legacy env variable; never exposed to browser.
@@ -541,11 +547,17 @@ def register_user():
         db.commit()
         try:
             send_verification_email(email, code)
+        except smtplib.SMTPAuthenticationError as exc:
+            db.query(EmailOTPModel).filter(EmailOTPModel.email == email).delete(synchronize_session=False)
+            db.commit()
+            # Log the SMTP response code only; never log credentials or the full response.
+            app.logger.error("Brevo SMTP authentication rejected credentials (SMTP code %s). Check SMTP_LOGIN and SMTP_KEY.", getattr(exc, "smtp_code", "unknown"))
+            return jsonify({"detail": "Brevo rejected the SMTP login. Check SMTP_LOGIN and SMTP_KEY in .env, then restart the backend."}), 503
         except Exception as exc:
             db.query(EmailOTPModel).filter(EmailOTPModel.email == email).delete(synchronize_session=False)
             db.commit()
             app.logger.error("Brevo verification email failed: %s", type(exc).__name__)
-            return jsonify({"detail": "We could not send the verification email. Please check the email setup and try again."}), 503
+            return jsonify({"detail": "We could not send the verification email. Check Brevo SMTP settings and sender verification, then try again."}), 503
         return jsonify({"status": "verification_sent", "email": email,
             "message": "We sent a 6-digit verification code. It expires in 10 minutes."}), 200
     finally:
@@ -606,16 +618,21 @@ def resend_otp():
         if not pending:
             return jsonify({"detail": "No active verification was found. Please start sign-up again."}), 400
         code = f"{secrets.randbelow(1_000_000):06d}"
+        # Send first; only replace the active code after SMTP confirms delivery.
+        # This avoids invalidating the previous code when SMTP is unavailable.
+        try:
+            send_verification_email(email, code)
+        except smtplib.SMTPAuthenticationError as exc:
+            app.logger.error("Brevo SMTP authentication rejected credentials during resend (SMTP code %s).", getattr(exc, "smtp_code", "unknown"))
+            return jsonify({"detail": "Brevo rejected the SMTP login. Check SMTP_LOGIN and SMTP_KEY in .env, then restart the backend."}), 503
+        except Exception as exc:
+            app.logger.error("Brevo resend failed: %s", type(exc).__name__)
+            return jsonify({"detail": "We could not send another email. Check Brevo SMTP settings and sender verification, then try again."}), 503
         pending.code_hash = otp_code_digest(email, code)
         pending.expires_at = datetime.utcnow() + timedelta(minutes=10)
         pending.attempts = 0
         pending.created_at = datetime.utcnow()
         db.commit()
-        try:
-            send_verification_email(email, code)
-        except Exception as exc:
-            app.logger.error("Brevo resend failed: %s", type(exc).__name__)
-            return jsonify({"detail": "We could not send another email. Please check the email setup and try again."}), 503
         return jsonify({"status": "verification_sent", "message": "A new code has been sent. The previous code is no longer valid."})
     finally:
         db.close()
