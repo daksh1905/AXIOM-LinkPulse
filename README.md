@@ -1,72 +1,116 @@
-# LinkPulse — Smart URL Shortener & Link Analytics
+<div align="center">
 
-**LinkPulse** is a web-based URL-shortening platform designed to make links easier to share, manage, and measure. It combines short-link creation, customizable QR codes, click analytics, account-based link management, and administrative safety controls in one interface.
+# 🔗 LinkPulse
 
-> **Project status:** Student/hackathon prototype. Features should be tested in the deployment environment before being described as production-ready.
+### **Shorten. Share. Measure. Manage.**
 
-## Project Links
+*A unified platform for smart URL management, QR sharing, click insights, and administrative control.*
 
-- **Live demo:** `ADD_YOUR_DEPLOYED_URL_HERE`
-- **Public GitHub repository:** `ADD_YOUR_GITHUB_REPOSITORY_URL_HERE`
-- **Problem statement:** URL Shortener & Analytics Platform
+[![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Backend-Flask-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Database](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20SQLite-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Deployment](https://img.shields.io/badge/Deploy-Render-46E3B7?logo=render&logoColor=black)](https://render.com/)
 
-Replace the placeholders above after deployment. Do not submit a localhost URL as the live demo.
+**[GitHub Repository](https://github.com/daksh1905/AXIOM-LinkPulse) · [Live Demo](#-live-demo) · [Judge Evaluation](#-judge-evaluation-checklist)**
 
-## Problem Statement
+</div>
 
-Long URLs are difficult to share, organize, and track. Teams also need a simple way to see whether their links are being used and to disable links that should no longer be active. LinkPulse brings link creation, redirection, QR-code generation, basic analytics, and link administration into one workflow.
+> 🚧 **Prototype status:** LinkPulse is a student/hackathon project. The features below describe the intended implementation and should be verified against the deployed build. The project has not been represented as independently security-audited or production-certified.
 
-## Proposed Solution
+---
 
-LinkPulse lets visitors create and share shortened URLs, customize QR codes, and inspect recorded link activity. Registered users can manage their own links, while administrators can review platform links and accounts, pause or resume links, delete links, and maintain a blocked-domain list.
+## 🧭 Contents
 
-## Key Features
+- [✨ Overview](#-overview)
+- [🎯 Problem & Solution](#-problem)
+- [🚀 Key Features](#-core-capabilities)
+- [🏗️ Architecture](#-technical-architecture)
+- [🧰 Technology Stack](#-technology-stack)
+- [📁 Repository Structure](#-repository-layout)
+- [⚙️ Configuration](#-configuration-reference)
+- [💻 Run Locally](#-local-verification)
+- [☁️ Deployment](#-deployment-outline-render)
+- [🧪 Judge Evaluation](#-judge-evaluation-checklist)
+- [🔐 Limitations & Responsible Use](#-limitations-and-responsible-use)
 
-### Short-link creation and redirection
-- Generate short links for destination URLs.
-- Support custom aliases, subject to validation and uniqueness rules.
-- Optionally set a link title, password protection, click limit, and expiration.
-- Validate link requests and apply the configured blocked-domain rules.
-- Pause, resume, or delete links through the available controls.
+## ✨ Overview
 
-### QR Design Studio
-- Create QR codes for links.
+**LinkPulse** is a web application prototype that brings short-link creation, configurable access rules, QR-code generation, click analytics, account-based link management, and administrator controls into one platform.
+
+### At a glance
+
+| | Details |
+|---|---|
+| **Project category** | Web application · URL management & analytics |
+| **Backend** | Python, Flask, SQLAlchemy |
+| **Frontend** | HTML, CSS, JavaScript |
+| **Data storage** | SQLite locally; PostgreSQL supported through `DATABASE_URL` |
+| **Email OTP delivery** | Brevo transactional email API over HTTPS |
+| **Deployment target** | Render |
+| **Source code** | [AXIOM-LinkPulse on GitHub](https://github.com/daksh1905/AXIOM-LinkPulse) |
+
+## 🌐 Live Demo
+
+> **Public demo:** _Add the deployed Render URL here after deployment._
+>
+> Do not use a localhost URL as the judge-facing demo link. Test the public URL from a separate browser or device before submission.
+
+## 🎯 Problem
+
+- **Project name:** LinkPulse
+- **Category:** Web application / URL management and analytics
+- **Backend:** Python, Flask, SQLAlchemy
+- **Frontend:** HTML, CSS, JavaScript (`static/index.html`, `static/admin.html`)
+- **Database:** SQLite for local development; PostgreSQL supported through `DATABASE_URL`
+- **Email OTP:** Brevo transactional email API over HTTPS
+- **Hosting target:** Render
+- **GitHub repository:** https://github.com/daksh1905/AXIOM-LinkPulse
+- **Live demo:** _Add the deployed public URL after deployment._
+
+## Problem
+
+Long URLs are inconvenient to share, difficult to organize, and provide little visibility into how links are used. QR-code creation, access restrictions, usage analytics, and administrative review may otherwise require separate tools. LinkPulse brings these tasks into one workflow.
+
+## 💡 Proposed Solution
+
+LinkPulse combines the lifecycle of a shareable link in one interface: create a short link, optionally configure its behavior, distribute it directly or as a QR code, review recorded activity, and manage or disable links when needed. Account and administrative workflows separate ordinary link management from platform-level controls.
+
+The goal is to simplify link sharing and provide useful usage signals without presenting those signals as verified identities or perfect bot detection.
+
+## 🚀 Core Capabilities
+
+### 🔗 1. Short-link creation and lifecycle controls
+- Generate short URLs for destination URLs.
+- Support custom aliases subject to validation and uniqueness checks.
+- Configure optional titles, password protection, click limits, and expiration.
+- Enable/disable links and handle links that are expired, inactive, password-protected, or over their click limit.
+- Apply configured blocked-domain checks to link creation.
+
+### 👤 2. Accounts and ownership
+- Account registration and sign-in using email and password.
+- Email OTP verification workflow.
+- Passwords are intended to be stored as password hashes rather than plaintext.
+- Account-owned link management and administrator-specific access paths.
+- Privileged operations are intended to be enforced by backend authorization checks.
+
+### 📱 3. QR-code design
+- Generate QR codes for shareable links.
 - Customize QR appearance using the options available in the interface.
-- Download the generated QR code for sharing.
+- Download QR output for digital or printed materials.
 
-### Accounts and ownership
-- Register and sign in with an email address and password.
-- Store account passwords as salted PBKDF2 hashes rather than plaintext.
-- Keep account-owned link management tied to the signed-in user.
-- Preserve the anonymous/browser-owned link workflow; anonymous links can be associated with an account when the same browser is used to register or sign in.
-- Provide an administrator login path from the homepage that redirects a valid administrator to the admin console.
+### 📊 4. Click analytics
+The analytics workflow records click events and can report:
+- Recorded click totals and recent event timestamps.
+- Device-category and browser-family estimates from user-agent information.
+- Referrer information when provided by the client.
+- Heuristic bot classification and likely-human event summaries.
 
-**Email verification and social sign-in (Google/Facebook) are not currently implemented.** An email entered in the current form is not proof that the person controls that mailbox.
+These are best-effort indicators. User-agent classification can be inaccurate, referrer information can be absent, and analytics do not establish a clicker's real-world identity.
 
-### Link analytics
-Analytics are available from the existing links panel and can include:
-- Recorded redirect/click totals.
-- Likely-human events and detected bot events.
-- Recent event timestamps.
-- Device and browser-family estimates.
-- Referrer host, when the browser provides it.
+### 📥 5. Bulk CSV import
+Bulk link creation accepts CSV input within the application's configured limits. The expected URL column is `original_url`; optional columns include `title` and `custom_alias`.
 
-Analytics are best-effort indicators. Bot detection is heuristic, referrer data can be unavailable, and these metrics do not establish the identity of a person who clicked a link.
-
-### Governance Studio (admin)
-- View registered accounts and their link counts.
-- Review the platform's links.
-- Pause/resume or delete links using administrator controls.
-- Add or remove blocked-domain rules.
-- Use administrator-only endpoints protected by the backend's authorization checks.
-
-### CSV import
-- Import multiple links from a CSV file (up to the application's configured limits).
-- Required column: `original_url`.
-- Optional columns: `title`, `custom_alias`.
-- Invalid rows are reported rather than silently treated as successful imports.
-
-Example CSV:
+Example:
 
 ```csv
 original_url,title,custom_alias
@@ -74,150 +118,190 @@ https://example.com/page,Launch page,launch-page
 https://example.org/news,News link,
 ```
 
-## Technology Stack
+Invalid rows should be reviewed in the import result rather than assumed to have succeeded.
 
-- **Backend:** Python, Flask
-- **Database:** SQLite
-- **Database access:** SQLAlchemy
-- **Frontend:** HTML, CSS, JavaScript
-- **Configuration:** environment variables with `python-dotenv` for local development
-- **User-agent parsing:** `user-agents`
-- **Hosting:** deployable to a Python web-service host such as Render
+### 🛡️ 6. Administrative governance
+The admin interface supports platform-level link and account review, link enable/disable or deletion controls, and management of blocked-domain rules. Administrative access should be enforced by the backend, not by hiding controls in the browser alone.
 
-## Project Structure
+### 🏷️ 7. Campaigns and tags
+The project scope includes organizing links with campaign/tag-style metadata where those controls are available in the current interface. Judges should verify the deployed UI and API behavior for these features during evaluation.
+
+## 🏗️ Technical Architecture
 
 ```text
-LinkPulse/
+Browser
+  ├── static/index.html  — main user interface
+  └── static/admin.html  — administrative interface
+             │ HTTP requests
+             ▼
+       Flask application
+       ├── account / OTP routes
+       ├── link creation and redirects
+       ├── QR and analytics routes
+       ├── CSV import
+       └── admin / blocklist routes
+             │ SQLAlchemy
+             ▼
+       Database configured by DATABASE_URL
+       ├── users
+       ├── email_otp_verifications
+       ├── links
+       ├── click_events
+       └── blocked_domains
+
+Flask backend ── HTTPS ──► Brevo transactional email API
+```
+
+### Database model overview
+
+| Table | Responsibility |
+|---|---|
+| `users` | Account and authentication-related data |
+| `email_otp_verifications` | Email OTP verification records |
+| `links` | Short-link destinations, settings, ownership and status |
+| `click_events` | Recorded redirect/click activity used by analytics |
+| `blocked_domains` | Administrator-managed domain restrictions |
+
+SQLAlchemy's `Base.metadata.create_all()` creates missing tables. The backend also contains targeted compatibility migrations for selected columns; this is not a full versioned migration system for arbitrary future schema changes.
+
+## 🧰 Technology Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | HTML, CSS, JavaScript |
+| Web framework | Flask |
+| Database ORM | SQLAlchemy |
+| Local database | SQLite |
+| Hosted database option | PostgreSQL |
+| PostgreSQL driver | Psycopg 3 |
+| Email OTP delivery | Brevo API over HTTPS |
+| User-agent parsing | `user-agents` |
+| Production WSGI server | Gunicorn |
+| Deployment target | Render |
+
+## 📁 Repository Layout
+
+```text
+AXIOM-LinkPulse/
 ├── backend.py
 ├── requirements.txt
 ├── README.md
-├── .gitignore
 ├── .env.example
+├── .gitignore
 └── static/
     ├── index.html
     └── admin.html
 ```
 
-The application creates or migrates its SQLite tables when the backend starts. Back up an existing database before replacing project files or restarting after database changes.
+A local `links.db` may be created when SQLite is used. Environment files and local database files should remain out of version control.
 
-## Run Locally
+## ⚙️ Configuration Reference
 
-### Requirements
-- Python 3.10 or a compatible Python version supported by the installed dependencies.
-- `pip`.
+Copy `.env.example` to `.env` for local development and supply private values. For hosted deployment, configure values in the hosting provider's environment-variable dashboard rather than committing `.env`.
 
-### Setup
+| Variable | Purpose |
+|---|---|
+| `FLASK_SECRET_KEY` | Signs Flask session data; use a long random secret |
+| `ADMIN_MASTER_KEY` | Administrator access key used by the backend's admin flow |
+| `ADMIN_LOGIN_EMAIL` | Administrator login identifier used by the homepage flow |
+| `ADMIN_LOGIN_PASSWORD` | Administrator login password |
+| `APP_ENV` | Environment mode; use `production` for hosted deployment when supported by the backend |
+| `HOST` | Bind address; hosted services commonly require `0.0.0.0` |
+| `PORT` | Local/server port setting where applicable |
+| `DATABASE_URL` | Optional SQLAlchemy database URL; omit locally to use the SQLite default |
+| `BREVO_API_KEY` | Private Brevo API key for transactional email |
+| `MAIL_FROM_EMAIL` | Sender address verified in Brevo |
+| `MAIL_FROM_NAME` | Display name for transactional email |
 
-1. Clone the repository and enter the project directory.
+**Secret handling:** `.env` must never be committed. Do not put private keys or administrator credentials in frontend JavaScript, screenshots, issue reports, or this README. Rotate any credential that is exposed.
 
-   ```bash
-   git clone ADD_YOUR_GITHUB_REPOSITORY_URL_HERE
-   cd LinkPulse
-   ```
+## 💻 Local Verification
 
-2. (Recommended) Create and activate a virtual environment.
+This section supports reproducibility and technical evaluation; it is not a substitute for testing the deployed build.
 
-   ```bash
-   python -m venv .venv
-   ```
-
-   Windows PowerShell:
-
-   ```powershell
-   .\.venv\Scripts\Activate.ps1
-   ```
-
-   macOS/Linux:
-
-   ```bash
-   source .venv/bin/activate
-   ```
-
-3. Install dependencies.
+1. Install a compatible Python version and create a virtual environment.
+2. Install dependencies:
 
    ```bash
    python -m pip install -r requirements.txt
    ```
 
-4. Copy `.env.example` to `.env` and replace every placeholder with a private value. Never commit `.env`.
-
-   Windows PowerShell:
-
-   ```powershell
-   Copy-Item .env.example .env
-   ```
-
-   macOS/Linux:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-5. Start the server.
+3. Copy `.env.example` to `.env` and set private local values. For OTP tests, configure a valid Brevo API key and a sender address verified in Brevo.
+4. Leave `DATABASE_URL` unset to use local SQLite, or configure a PostgreSQL URL for a test database.
+5. Start the application:
 
    ```bash
    python backend.py
    ```
 
-6. Open the local address printed by the application (the current project configuration normally uses `http://127.0.0.1:8000`). A localhost address is only accessible from your own computer; judges need the deployed public URL.
+6. Open the local address printed by the application. The current configuration normally uses port `8000`.
 
-## Environment Variables and Secrets
+Use test URLs and test accounts, not real customer data or production credentials.
 
-Use `.env.example` to document the variable names and placeholder values required by the backend. Keep the actual `.env` file private and excluded by `.gitignore`.
+## ☁️ Deployment Outline (Render)
 
-For deployment, enter each required variable and its real value in the hosting provider's **Environment Variables** settings. Do not upload `.env` to GitHub or paste secret values into this README. Check `backend.py` and `.env.example` for the exact variable names used by this version.
-
-Administrator credentials and secret keys must remain server-side. Do not embed private administrator keys or passwords in frontend JavaScript.
-
-## Deployment Notes (Render example)
-
-1. Push the project to a **public GitHub repository** if required by the event.
-2. Create a Python Web Service in Render and connect the repository.
-3. Set the build command to:
+1. Connect the GitHub repository to a Render Web Service.
+2. Build command:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-4. If the backend file is `backend.py` and the Flask object is named `app`, set the start command to:
+3. Start command:
 
    ```bash
    gunicorn backend:app
    ```
 
-5. Add the required environment variables in Render's service settings.
-6. Deploy, open the public URL, and test the main flows.
+4. Configure the environment variables listed above in Render.
+5. If using Render PostgreSQL, configure `DATABASE_URL` with the connection URL appropriate for the service's network location. Prefer the provider's internal URL when the web service and database are in the same region.
+6. Confirm production mode, HTTPS, session-cookie settings, email delivery, database access, and application routes.
+7. Test the public URL from a separate browser or device.
 
-Free web-service filesystems may be temporary. Because this project uses SQLite, do not assume a database stored on the service's local filesystem will survive restarts, redeployments, or sleep/wake cycles. Configure supported persistent storage or use a suitable managed database before relying on long-term data retention. Check the host's current pricing and limits before deployment.
+Free hosting plans may sleep, impose resource limits, or provide ephemeral local filesystems. Use managed PostgreSQL for hosted persistence rather than relying on a local SQLite file on an ephemeral web-service filesystem. Review current hosting limits and database lifecycle policies before a live demonstration.
 
-## Security, Privacy, and Known Limitations
+## 🧪 Judge Evaluation Checklist
 
-- The current registration flow does **not** verify that a user owns the email address they enter; email verification is not implemented.
-- Google/Facebook sign-in, password-reset email, and multi-factor authentication are not implemented.
-- Analytics do not provide verified geographic location or reliable unique-person counts. The application does not store clicker IP addresses in the described analytics flow.
-- Bot/human classification is heuristic and may be wrong.
-- Device-specific destination targeting and full campaign/tag/workspace management are not implemented in this prototype.
-- Anonymous link ownership relies on a browser identifier; clearing browser storage may make those anonymous links difficult to manage from that browser.
-- SQLite is suitable for a lightweight prototype, but deployment storage and concurrency requirements should be reviewed before production use.
-- Do not claim the project is bug-free or production-ready until it has been tested on the actual deployment.
+The following test plan helps evaluate the prototype without assuming a feature works merely because it is listed.
 
-## Pre-submission / Demo Checklist
+| Test | Suggested evaluation |
+|---|---|
+| Registration and OTP | Register with a test mailbox and verify the OTP workflow |
+| Authentication | Sign in and sign out; test invalid credentials |
+| Short-link creation | Create a short link and follow it to the expected destination |
+| Alias validation | Try a valid alias, a duplicate alias, and an invalid alias |
+| Password protection | Open a protected link with and without the correct password |
+| Expiration and click limit | Test links configured with short expiry/click limits |
+| QR generation | Generate, customize, download, and scan a QR code |
+| Analytics | Visit a test link and inspect recorded event information |
+| Ownership | Check that one ordinary account cannot manage another account's links |
+| Admin governance | Review links/accounts and test enable/disable controls |
+| Blocklist | Add a test domain, verify expected handling, then remove the rule |
+| CSV import | Import valid and invalid rows and inspect the result |
+| Persistence | Create a test record, restart/redeploy as appropriate, and verify persistence |
+| Secrets | Confirm `.env`, API keys, database credentials, and local DB files are not committed |
 
-- [ ] The live public URL opens from a different device or browser.
-- [ ] A user can register, sign in, and sign out.
-- [ ] The administrator can sign in and reach Governance Studio.
-- [ ] A user can create a short link and follow it to the intended destination.
-- [ ] Custom alias validation, expiry, password protection, and click limits are tested where enabled.
-- [ ] QR generation, customization, and download work.
-- [ ] The links panel displays analytics for a test link.
-- [ ] User-owned links cannot be managed by another ordinary user.
-- [ ] Pause/resume/delete controls behave correctly.
-- [ ] Blocked-domain rules are tested and can be removed again.
-- [ ] CSV import is tested with both valid and invalid rows.
-- [ ] Database persistence is tested after a restart/redeploy, or the limitation is clearly understood.
-- [ ] `.env` and local database files are not committed to GitHub.
-- [ ] README live URL, repository URL, and screenshots are updated before submission.
+Use test URLs and test accounts. Do not test security controls against third-party systems without authorization.
 
-## Acknowledgement
+## 🔐 Limitations and Responsible Use
 
-Built as a student/hackathon prototype to demonstrate URL shortening, link management, QR-code customization, basic analytics, and administrative governance in one web application.
+- This is a prototype and has not been presented as independently security-audited or production-certified.
+- Analytics and bot classification are heuristic and can be incomplete or incorrect.
+- Referrer data may be absent, and click events do not verify a person's identity.
+- OTP delivery depends on correct Brevo configuration, a verified sender, network access, and provider availability.
+- In-process throttling is not shared across multiple application workers. A multi-worker deployment may require a shared rate-limit store.
+- Targeted schema checks cover selected legacy columns only. More complex future changes should use a versioned migration tool.
+- Deployment reliability depends on hosting-plan limits, database lifecycle, and configuration.
+- Any campaign/tag or advanced feature should be demonstrated in the actual deployed build rather than inferred from this overview.
+
+## 🏁 Project Summary
+
+LinkPulse demonstrates how URL shortening can be combined with access rules, QR-code sharing, event-based analytics, account ownership, and administrative governance in one Flask application. Evaluation should focus on **end-to-end behavior**, **clear technical design**, and a **transparent discussion of limitations**.
+
+---
+
+<div align="center">
+
+**Built as a student project · Designed for clearer, more manageable link sharing**
+
+</div>
