@@ -5,7 +5,7 @@ Secrets belong in .env; never put them in browser JavaScript.
 """
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from functools import wraps
 import hashlib
 import hmac
@@ -15,6 +15,9 @@ import secrets
 import string
 import threading
 import time
+import smtplib
+import ssl
+from email.message import EmailMessage
 from urllib.parse import urlparse
 
 from dotenv import load_dotenv
@@ -53,7 +56,19 @@ class UserModel(Base):
     email = Column(String(320), unique=True, nullable=False, index=True)
     password_hash = Column(String, nullable=False)
     role = Column(String(20), default="user", nullable=False)
+    email_verified = Column(Boolean, default=True, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+class EmailOTPModel(Base):
+    __tablename__ = "email_otp_verifications"
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String(320), unique=True, nullable=False, index=True)
+    password_hash = Column(String, nullable=False)
+    code_hash = Column(String(64), nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    attempts = Column(Integer, default=0, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 
 class LinkModel(Base):
@@ -97,6 +112,13 @@ Base.metadata.create_all(bind=engine)
 # Backwards-compatible migration for existing SQLite databases.
 if DATABASE_URL.startswith("sqlite"):
     _inspector = inspect(engine)
+    if "users" in _inspector.get_table_names():
+        _user_columns = {column["name"] for column in _inspector.get_columns("users")}
+        if "email_verified" not in _user_columns:
+            with engine.begin() as _conn:
+                # Existing accounts predate OTP verification; preserve their access.
+                _conn.execute(text("ALTER TABLE users ADD COLUMN email_verified BOOLEAN NOT NULL DEFAULT 1"))
+    _inspector = inspect(engine)
     if "links" in _inspector.get_table_names():
         _columns = {column["name"] for column in _inspector.get_columns("links")}
         with engine.begin() as _conn:
@@ -109,6 +131,14 @@ if DATABASE_URL.startswith("sqlite"):
         if "referrer" not in _click_columns:
             with engine.begin() as _conn:
                 _conn.execute(text("ALTER TABLE click_events ADD COLUMN referrer VARCHAR(500) DEFAULT 'Direct / unknown'"))
+else:
+    # Keep existing deployments compatible when they use a non-SQLite SQLAlchemy URL.
+    _inspector = inspect(engine)
+    if "users" in _inspector.get_table_names():
+        _user_columns = {column["name"] for column in _inspector.get_columns("users")}
+        if "email_verified" not in _user_columns:
+            with engine.begin() as _conn:
+                _conn.execute(text("ALTER TABLE users ADD COLUMN email_verified BOOLEAN NOT NULL DEFAULT TRUE"))
 with SessionLocal() as db:
     if not db.query(BlockedDomainModel).first():
         db.add_all([
@@ -439,6 +469,43 @@ def analytics(code):
         db.close()
 
 
+def otp_code_digest(email: str, code: str) -> str:
+    return hmac.new(FLASK_SECRET.encode("utf-8"), f"{email}:{code}".encode("utf-8"), hashlib.sha256).hexdigest()
+
+
+def send_verification_email(to_email: str, code: str) -> None:
+    """Send a one-time verification code through Brevo SMTP."""
+    host = os.getenv("SMTP_HOST", "smtp-relay.brevo.com").strip()
+    port = int(os.getenv("SMTP_PORT", "587"))
+    username = os.getenv("SMTP_LOGIN", "").strip()
+    smtp_key = os.getenv("SMTP_KEY", "")
+    sender = os.getenv("MAIL_FROM_EMAIL", "").strip()
+    sender_name = os.getenv("MAIL_FROM_NAME", "LinkPulse").strip() or "LinkPulse"
+    if not all((host, username, smtp_key, sender)):
+        raise RuntimeError("Email verification is not configured yet. The project owner must add Brevo SMTP settings.")
+    message = EmailMessage()
+    message["Subject"] = "Your LinkPulse verification code"
+    message["From"] = f"{sender_name} <{sender}>"
+    message["To"] = to_email
+    message.set_content(
+        f"Your LinkPulse verification code is {code}.\n\n"
+        "It expires in 10 minutes and can be used only once. If you did not request this code, ignore this email."
+    )
+    context = ssl.create_default_context()
+    timeout = 15
+    if port == 465:
+        with smtplib.SMTP_SSL(host, port, timeout=timeout, context=context) as smtp:
+            smtp.login(username, smtp_key)
+            smtp.send_message(message)
+    else:
+        with smtplib.SMTP(host, port, timeout=timeout) as smtp:
+            smtp.ehlo()
+            smtp.starttls(context=context)
+            smtp.ehlo()
+            smtp.login(username, smtp_key)
+            smtp.send_message(message)
+
+
 @app.post("/api/auth/register")
 def register_user():
     data = request.get_json(silent=True) or {}
@@ -450,18 +517,106 @@ def register_user():
         return jsonify({"detail": "Password must be between 10 and 128 characters."}), 400
     if limited("register:" + (request.remote_addr or "unknown"), limit=8, window=3600):
         return jsonify({"detail": "Too many account-creation attempts. Please try again later."}), 429
+    if limited("otp-send-ip:" + (request.remote_addr or "unknown"), limit=5, window=900):
+        return jsonify({"detail": "Too many verification emails requested. Please wait 15 minutes."}), 429
     db = SessionLocal()
     try:
         if db.query(UserModel).filter(UserModel.email == email).first():
             return jsonify({"detail": "An account with this email already exists. Please sign in."}), 409
-        user = UserModel(email=email, password_hash=hash_password(password), role="user")
+        if limited("otp-send-email:" + email, limit=3, window=900):
+            return jsonify({"detail": "A verification email was sent recently. Please wait before requesting another."}), 429
+        code = f"{secrets.randbelow(1_000_000):06d}"
+        pending = db.query(EmailOTPModel).filter(EmailOTPModel.email == email).first()
+        if pending:
+            pending.password_hash = hash_password(password)
+            pending.code_hash = otp_code_digest(email, code)
+            pending.expires_at = datetime.utcnow() + timedelta(minutes=10)
+            pending.attempts = 0
+            pending.created_at = datetime.utcnow()
+        else:
+            pending = EmailOTPModel(email=email, password_hash=hash_password(password),
+                code_hash=otp_code_digest(email, code),
+                expires_at=datetime.utcnow() + timedelta(minutes=10), attempts=0)
+            db.add(pending)
+        db.commit()
+        try:
+            send_verification_email(email, code)
+        except Exception as exc:
+            db.query(EmailOTPModel).filter(EmailOTPModel.email == email).delete(synchronize_session=False)
+            db.commit()
+            app.logger.error("Brevo verification email failed: %s", type(exc).__name__)
+            return jsonify({"detail": "We could not send the verification email. Please check the email setup and try again."}), 503
+        return jsonify({"status": "verification_sent", "email": email,
+            "message": "We sent a 6-digit verification code. It expires in 10 minutes."}), 200
+    finally:
+        db.close()
+
+
+@app.post("/api/auth/verify-email")
+def verify_email():
+    data = request.get_json(silent=True) or {}
+    email = str(data.get("email") or "").strip().lower()
+    code = str(data.get("code") or "").strip()
+    if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email) or not re.fullmatch(r"\d{6}", code):
+        return jsonify({"detail": "Enter the email address and the 6-digit code."}), 400
+    if limited("otp-verify:" + (request.remote_addr or "unknown"), limit=20, window=900):
+        return jsonify({"detail": "Too many verification attempts. Please wait and try again."}), 429
+    db = SessionLocal()
+    try:
+        pending = db.query(EmailOTPModel).filter(EmailOTPModel.email == email).first()
+        if not pending:
+            return jsonify({"detail": "No active verification was found. Please start sign-up again."}), 400
+        if pending.expires_at < datetime.utcnow():
+            db.delete(pending); db.commit()
+            return jsonify({"detail": "That code has expired. Please request a new one."}), 400
+        if pending.attempts >= 5:
+            db.delete(pending); db.commit()
+            return jsonify({"detail": "Too many incorrect codes. Please start sign-up again."}), 429
+        if not hmac.compare_digest(pending.code_hash, otp_code_digest(email, code)):
+            pending.attempts += 1
+            db.commit()
+            return jsonify({"detail": "That verification code is incorrect."}), 400
+        if db.query(UserModel).filter(UserModel.email == email).first():
+            db.delete(pending); db.commit()
+            return jsonify({"detail": "An account with this email already exists. Please sign in."}), 409
+        user = UserModel(email=email, password_hash=pending.password_hash, role="user", email_verified=True)
         db.add(user); db.flush()
         owner_key = request.headers.get("X-Owner-Key", "").strip()
         if re.fullmatch(r"[A-Za-z0-9_-]{32,128}", owner_key):
-            db.query(LinkModel).filter(LinkModel.owner_key_hash == owner_key_digest(owner_key), LinkModel.owner_user_id.is_(None)).update({LinkModel.owner_user_id: user.id, LinkModel.owner_key_hash: None}, synchronize_session=False)
+            db.query(LinkModel).filter(LinkModel.owner_key_hash == owner_key_digest(owner_key), LinkModel.owner_user_id.is_(None)).update({"owner_user_id": user.id, "owner_key_hash": None}, synchronize_session=False)
+        db.delete(pending)
         db.commit(); db.refresh(user)
         session.clear(); session["user_id"] = user.id; session["email"] = user.email; session["role"] = "user"; session.permanent = True
-        return jsonify({"status": "registered", "user": {"email": user.email, "role": user.role}}), 201
+        return jsonify({"status": "verified", "user": {"email": user.email, "role": user.role}, "redirect": "/"}), 201
+    finally:
+        db.close()
+
+
+@app.post("/api/auth/resend-otp")
+def resend_otp():
+    data = request.get_json(silent=True) or {}
+    email = str(data.get("email") or "").strip().lower()
+    if not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email) or len(email) > 320:
+        return jsonify({"detail": "Enter a valid email address."}), 400
+    if limited("otp-resend-ip:" + (request.remote_addr or "unknown"), limit=5, window=900) or limited("otp-resend-email:" + email, limit=3, window=900):
+        return jsonify({"detail": "Too many code requests. Please wait before trying again."}), 429
+    db = SessionLocal()
+    try:
+        pending = db.query(EmailOTPModel).filter(EmailOTPModel.email == email).first()
+        if not pending:
+            return jsonify({"detail": "No active verification was found. Please start sign-up again."}), 400
+        code = f"{secrets.randbelow(1_000_000):06d}"
+        pending.code_hash = otp_code_digest(email, code)
+        pending.expires_at = datetime.utcnow() + timedelta(minutes=10)
+        pending.attempts = 0
+        pending.created_at = datetime.utcnow()
+        db.commit()
+        try:
+            send_verification_email(email, code)
+        except Exception as exc:
+            app.logger.error("Brevo resend failed: %s", type(exc).__name__)
+            return jsonify({"detail": "We could not send another email. Please check the email setup and try again."}), 503
+        return jsonify({"status": "verification_sent", "message": "A new code has been sent. The previous code is no longer valid."})
     finally:
         db.close()
 
@@ -486,6 +641,8 @@ def auth_login():
         user = db.query(UserModel).filter(UserModel.email == email).first()
         if not user or not check_password(password, user.password_hash):
             return jsonify({"detail": "Invalid email/ID or password."}), 401
+        if not user.email_verified:
+            return jsonify({"detail": "Please verify your email before signing in."}), 403
         owner_key = request.headers.get("X-Owner-Key", "").strip()
         if re.fullmatch(r"[A-Za-z0-9_-]{32,128}", owner_key):
             db.query(LinkModel).filter(LinkModel.owner_key_hash == owner_key_digest(owner_key), LinkModel.owner_user_id.is_(None)).update({LinkModel.owner_user_id: user.id, LinkModel.owner_key_hash: None}, synchronize_session=False)
