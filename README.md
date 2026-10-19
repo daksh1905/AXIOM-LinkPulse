@@ -11,7 +11,7 @@
 [![Database](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20SQLite-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Deployment](https://img.shields.io/badge/Deploy-Render-46E3B7?logo=render&logoColor=black)](https://render.com/)
 
-**[GitHub Repository](https://github.com/daksh1905/AXIOM-LinkPulse) · [Live Demo](#-live-demo) · [Judge Evaluation](#-judge-evaluation-checklist)**
+**[🌐 Open Live Demo](https://linkpulse-lesk.onrender.com/) · [GitHub Repository](https://github.com/daksh1905/AXIOM-LinkPulse) · [Judge Evaluation](#-judge-evaluation-checklist)**
 
 </div>
 
@@ -51,9 +51,9 @@
 
 ## 🌐 Live Demo
 
-> **Public demo:** _Add the deployed Render URL here after deployment._
+> **Public demo:** [https://linkpulse-lesk.onrender.com/](https://linkpulse-lesk.onrender.com/)
 >
-> Do not use a localhost URL as the judge-facing demo link. Test the public URL from a separate browser or device before submission.
+> Open the live LinkPulse application using the link above. Test the public URL from a separate browser or device before submission.
 
 ## 🎯 Problem
 
@@ -65,7 +65,7 @@
 - **Email OTP:** Brevo transactional email API over HTTPS
 - **Hosting target:** Render
 - **GitHub repository:** https://github.com/daksh1905/AXIOM-LinkPulse
-- **Live demo:** _Add the deployed public URL after deployment._
+- **Live demo:** [https://linkpulse-lesk.onrender.com/](https://linkpulse-lesk.onrender.com/)
 
 ## Problem
 
