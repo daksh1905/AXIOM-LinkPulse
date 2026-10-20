@@ -304,7 +304,6 @@ Use test URLs and test accounts. Do not test security controls against third-par
 - Developed the Flask backend and integrated application logic.
 - Worked on database integration and link management functionality.
 - Integrated key features, including link analytics, authentication, and administrative controls.
-- Led the technical implementation and integration of the project.
 
 ### 📋 Documentation & Project Presentation
 
