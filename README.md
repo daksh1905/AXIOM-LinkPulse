@@ -294,6 +294,11 @@ Use test URLs and test accounts. Do not test security controls against third-par
 - Deployment reliability depends on hosting-plan limits, database lifecycle, and configuration.
 - Any campaign/tag or advanced feature should be demonstrated in the actual deployed build rather than inferred from this overview.
 
+## 👥 Contributors
+
+- Daksh — Project Developer
+- Anmol Kaintura — Documentation & Project Presentation
+
 ## 🏁 Project Summary
 
 LinkPulse demonstrates how URL shortening can be combined with access rules, QR-code sharing, event-based analytics, account ownership, and administrative governance in one Flask application. Evaluation should focus on **end-to-end behavior**, **clear technical design**, and a **transparent discussion of limitations**.
