@@ -294,10 +294,45 @@ Use test URLs and test accounts. Do not test security controls against third-par
 - Deployment reliability depends on hosting-plan limits, database lifecycle, and configuration.
 - Any campaign/tag or advanced feature should be demonstrated in the actual deployed build rather than inferred from this overview.
 
-## 👥 Contributors
+## 👥 Project Team & Contributors
 
-- Daksh — Project Developer
-- Anmol Kaintura — Documentation & Project Presentation
+### 🚀 Core Development
+
+**Daksh — Lead Developer & Full-Stack Implementation**
+- Designed and developed the core LinkPulse application.
+- Implemented the frontend interface and responsive user experience.
+- Developed the Flask backend and integrated application logic.
+- Worked on database integration and link management functionality.
+- Integrated key features, including link analytics, authentication, and administrative controls.
+- Led the technical implementation and integration of the project.
+
+### 📋 Documentation & Project Presentation
+
+**Anmol Kaintura — Project Presentation & Content Structuring**
+- Contributed to preparing the project's documentation.
+- Helped organize and present the project's features and functionality.
+- Assisted in communicating the project's objectives and workflow.
+
+### 🎬 Video Production & Presentation
+
+**Divyanshi Shahi — Video Production & Project Presentation**
+- Contributed to producing the project explainer video.
+- Helped present the project's features and functionality.
+- Assisted in communicating the project's purpose and key highlights.
+
+### 🎤 Video Narration & Project Presentation
+
+**Kumkum — Project Presentation & Video Narration**
+- Contributed to explaining the project's concept and functionality.
+- Participated in the project's video narration and presentation.
+- Helped communicate the project's key features to the audience.
+
+### 🤝 Project Support
+
+**Jyoti Bisht — Project Support & Coordination**
+- Participated in project-related discussions and coordination, where applicable.
+- Provided support during project activities.
+- Contributed to the team's collaborative project effort.
 
 ## 🏁 Project Summary
 
